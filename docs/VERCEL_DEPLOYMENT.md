@@ -10,11 +10,11 @@ The default website is a **fixed-corpus demonstration with real inference**. It 
 
 1. Vercel recognizes root `app.py` as the FastAPI entrypoint and Python 3.12 from `.python-version`.
 2. The normal Python project dependencies come from the committed `pyproject.toml` and `uv.lock`.
-3. `scripts/build_vercel.py` prepares shared frontend helpers, installs the exported, hashed production/semantic dependency graph under `vendor/`, and downloads the pinned model at build time.
-4. `app.py` includes the deployment-only vendor directory on its module path. The API loads only local, checksum-verified model files at startup.
+3. `scripts/build_vercel.py` prepares shared frontend helpers, installs the exported, hashed production/semantic dependency graph into Vercel's managed Python environment, and downloads the pinned model at build time. It does not create a second vendored copy of the installed packages.
+4. `app.py` exposes the shared backend package. The API loads only local, checksum-verified model files at startup.
 5. `vercel.json` sets a 30-second function duration, excludes development files from the bundle and applies security headers to CDN/function responses.
 
-`vendor/`, `.vercel/`, model artifacts, local environments and generated helper copies are excluded from Git. The deployment build reconstructs them. There are no tokens in the source or build command.
+`.vercel/`, model artifacts, local environments and generated helper copies are excluded from Git. The deployment build reconstructs the required files. There are no tokens in the source or build command.
 
 To regenerate the runtime export after a dependency change:
 

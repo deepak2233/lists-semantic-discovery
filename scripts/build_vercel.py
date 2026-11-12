@@ -18,8 +18,8 @@ def main():
             "uv",
             "pip",
             "install",
-            "--target",
-            "vendor",
+            "--python",
+            sys.executable,
             "--requirement",
             "deploy/vercel-requirements.txt",
         ],
@@ -27,7 +27,7 @@ def main():
         check=True,
     )
     environment = os.environ.copy()
-    environment["PYTHONPATH"] = os.pathsep.join([str(ROOT / "vendor"), str(ROOT / "backend")])
+    environment["PYTHONPATH"] = str(ROOT / "backend")
     subprocess.run(
         [sys.executable, "scripts/download_model.py"], cwd=ROOT, env=environment, check=True
     )
