@@ -4,7 +4,6 @@
   <a href="#quick-start">Quick start</a> ·
   <a href="#inference-playground">Playground</a> ·
   <a href="docs/HLD.md">Architecture</a> ·
-  <a href="docs/EDGE_CASES.md">Edge-case coverage</a> ·
   <a href="docs/VERCEL_DEPLOYMENT.md">Deploy to Vercel</a>
 </p>
 
@@ -129,23 +128,9 @@ uv run --no-sync python scripts/verify_http.py
 uv run --no-sync python scripts/verify_http.py --model-path models/minilm
 ```
 
-The suite covers backend contracts and browser logic, including malformed payloads, signed URLs, duplicate handling, JWT failures, provider outages, quotas, cache expiry, cancellation, stale responses, unsafe links and JSON inspection. See the [coverage matrix](docs/EDGE_CASES.md) for tested cases and unresolved boundaries.
+The suite covers backend contracts and browser logic, including malformed payloads, signed URLs, duplicate handling, JWT failures, provider outages, quotas, cache expiry, cancellation, stale responses, unsafe links and JSON inspection.
 
 **No test suite establishes that all corner cases are covered.** Independent relevance evaluation, actual Chrome extension acceptance, global quota enforcement and production load/failover tests remain separate requirements. The small authored relevance set and loopback probes are explicitly not production benchmarks.
-
-## Documentation map
-
-| Document | Use it for |
-| --- | --- |
-| [High-level design](docs/HLD.md) | End-to-end architecture, request journey, ranking, contracts and sizing |
-| [Edge-case coverage](docs/EDGE_CASES.md) | Concrete regression coverage and remaining gaps |
-| [Vercel deployment](docs/VERCEL_DEPLOYMENT.md) | Build, runtime, environment, verification and rollback |
-| [Research](docs/RESEARCH.md) | Primary papers and official references |
-| [Security and privacy](docs/SECURITY_PRIVACY.md) | Trust boundaries, actual data sharing and limitations |
-| [Operations](docs/OPERATIONS.md) | Configuration, SLO targets and incident runbooks |
-| [Evaluation](docs/EVALUATION.md) | Authored regression versus independent quality evidence |
-| [Roadmap](docs/ROADMAP.md) | Priorities, ownership and public-release gates |
-| [Verification record](docs/VERIFICATION.md) | Observed checks and local measurements |
 
 ## Project layout
 
