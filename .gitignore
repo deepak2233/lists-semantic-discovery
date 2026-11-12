@@ -1,0 +1,15 @@
+.venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.ruff_cache/
+.coverage
+.env
+models/
+dist/
+build/
+*.egg-info/
+tmp/
+node_modules/
+output/
+!output/.gitkeep

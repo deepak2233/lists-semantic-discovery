@@ -1,0 +1,180 @@
+{
+  "label": "AUTHORED_FIXTURE_REGRESSION_NOT_INDEPENDENT_BENCHMARK",
+  "ranker": "bm25-rrf-mmr",
+  "corpus_documents": 44,
+  "queries": 8,
+  "corpus_sha256": "c0b1f4c324202371082ad0236ea9edcf69043f0125eb42a07f6697150eb30d8c",
+  "model_revision": null,
+  "mean_ndcg_at_10": 0.8978,
+  "mean_recall_at_10": 0.8577,
+  "results": [
+    {
+      "query": "hybrid",
+      "ndcg_at_10": 0.9967,
+      "recall_at_10": 1.0,
+      "precision_at_5": 1.0,
+      "unique_hosts_at_10": 8,
+      "elapsed_ms": 16.74,
+      "result_count": 10,
+      "urls": [
+        "https://www.elastic.co/guide/en/elasticsearch/reference/current/rrf.html",
+        "https://www.sbert.net/docs/cross_encoder/usage/usage.html",
+        "https://www.sbert.net/examples/sentence_transformer/applications/retrieve_rerank/README.html",
+        "https://cormack.uwaterloo.ca/cormacksigir09-rrf.pdf",
+        "https://aclanthology.org/D19-1410/",
+        "https://huggingface.co/sentence-transformers/all-MiniLM-L6-v2",
+        "https://nlp.stanford.edu/IR-book/",
+        "https://aclanthology.org/W04-3252/",
+        "https://trec.nist.gov/overview.html",
+        "https://www.cs.cmu.edu/afs/cs/Web/People/jgc/publication/MMR_DiversityBased_Reranking_SIGIR_1998.pdf"
+      ]
+    },
+    {
+      "query": "chrome",
+      "ndcg_at_10": 0.8391,
+      "recall_at_10": 0.8333,
+      "precision_at_5": 0.6,
+      "unique_hosts_at_10": 9,
+      "elapsed_ms": 32.67,
+      "result_count": 10,
+      "urls": [
+        "https://developer.chrome.com/docs/extensions/develop/concepts/activeTab",
+        "https://developer.chrome.com/docs/extensions/develop/concepts/service-workers/basics",
+        "https://github.com/GoogleChrome/chrome-extensions-samples",
+        "https://aws.amazon.com/builders-library/making-retries-safe-with-idempotent-APIs/",
+        "https://prometheus.io/docs/practices/instrumentation/",
+        "https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions",
+        "https://cheatsheetseries.owasp.org/cheatsheets/DOM_based_XSS_Prevention_Cheat_Sheet.html",
+        "https://docs.python.org/3/library/unittest.html",
+        "https://aclanthology.org/D19-1410/",
+        "https://redis.io/docs/latest/develop/use/keyspace/"
+      ]
+    },
+    {
+      "query": "api",
+      "ndcg_at_10": 0.9423,
+      "recall_at_10": 0.7143,
+      "precision_at_5": 1.0,
+      "unique_hosts_at_10": 10,
+      "elapsed_ms": 46.73,
+      "result_count": 10,
+      "urls": [
+        "https://fastapi.tiangolo.com/tutorial/",
+        "https://www.uvicorn.org/deployment/",
+        "https://www.python-httpx.org/advanced/timeouts/",
+        "https://www.starlette.io/middleware/",
+        "https://docs.pydantic.dev/latest/concepts/models/",
+        "https://docs.python.org/3/library/unittest.html",
+        "https://docs.docker.com/build/building/best-practices/",
+        "https://owasp.org/www-community/attacks/Server_Side_Request_Forgery",
+        "https://opentelemetry.io/docs/concepts/observability-primer/",
+        "https://research.google/pubs/the-google-cluster-workload-traces/"
+      ]
+    },
+    {
+      "query": "kafka",
+      "ndcg_at_10": 0.9747,
+      "recall_at_10": 1.0,
+      "precision_at_5": 0.8,
+      "unique_hosts_at_10": 10,
+      "elapsed_ms": 26.51,
+      "result_count": 10,
+      "urls": [
+        "https://docs.confluent.io/platform/current/kafka/design/delivery-semantics.html",
+        "https://www.postgresql.org/docs/current/ddl-constraints.html",
+        "https://microservices.io/patterns/communication-style/idempotent-consumer.html",
+        "https://redis.io/docs/latest/develop/use/keyspace/",
+        "https://kafka.apache.org/documentation/",
+        "https://aws.amazon.com/builders-library/making-retries-safe-with-idempotent-APIs/",
+        "https://docs.pydantic.dev/latest/concepts/models/",
+        "https://docs.github.com/en/actions/concepts/workflows-and-actions/workflows",
+        "https://prometheus.io/docs/practices/instrumentation/",
+        "https://www.cs.cmu.edu/afs/cs/Web/People/jgc/publication/MMR_DiversityBased_Reranking_SIGIR_1998.pdf"
+      ]
+    },
+    {
+      "query": "resilience",
+      "ndcg_at_10": 0.8832,
+      "recall_at_10": 0.8571,
+      "precision_at_5": 0.6,
+      "unique_hosts_at_10": 10,
+      "elapsed_ms": 58.04,
+      "result_count": 10,
+      "urls": [
+        "https://opentelemetry.io/docs/concepts/observability-primer/",
+        "https://sre.google/sre-book/handling-overload/",
+        "https://www.python-httpx.org/advanced/timeouts/",
+        "https://docs.pytest.org/en/stable/how-to/fixtures.html",
+        "https://docs.docker.com/build/building/best-practices/",
+        "https://learn.microsoft.com/en-us/azure/architecture/patterns/circuit-breaker",
+        "https://prometheus.io/docs/practices/instrumentation/",
+        "https://redis.io/docs/latest/develop/use/keyspace/",
+        "https://kubernetes.io/docs/tasks/run-application/horizontal-pod-autoscale/",
+        "https://www.uvicorn.org/deployment/"
+      ]
+    },
+    {
+      "query": "security",
+      "ndcg_at_10": 0.9822,
+      "recall_at_10": 1.0,
+      "precision_at_5": 0.8,
+      "unique_hosts_at_10": 9,
+      "elapsed_ms": 52.17,
+      "result_count": 10,
+      "urls": [
+        "https://pyjwt.readthedocs.io/en/stable/usage.html",
+        "https://datatracker.ietf.org/doc/html/rfc9700",
+        "https://owasp.org/www-community/attacks/Server_Side_Request_Forgery",
+        "https://cheatsheetseries.owasp.org/cheatsheets/DOM_based_XSS_Prevention_Cheat_Sheet.html",
+        "https://www.python-httpx.org/advanced/timeouts/",
+        "https://developer.chrome.com/docs/webstore/program-policies/user-data-faq",
+        "https://www.rfc-editor.org/rfc/rfc7636",
+        "https://developer.chrome.com/docs/extensions/develop/concepts/activeTab",
+        "https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions",
+        "https://docs.python.org/3/library/unittest.html"
+      ]
+    },
+    {
+      "query": "nlp",
+      "ndcg_at_10": 0.6874,
+      "recall_at_10": 0.6,
+      "precision_at_5": 0.4,
+      "unique_hosts_at_10": 9,
+      "elapsed_ms": 15.78,
+      "result_count": 10,
+      "urls": [
+        "https://aclanthology.org/W04-3252/",
+        "https://scikit-learn.org/stable/modules/feature_extraction.html",
+        "https://nlp.stanford.edu/IR-book/",
+        "https://trec.nist.gov/overview.html",
+        "https://cormack.uwaterloo.ca/cormacksigir09-rrf.pdf",
+        "https://aclanthology.org/D19-1410/",
+        "https://docs.astral.sh/uv/concepts/projects/sync/",
+        "https://www.sbert.net/examples/sentence_transformer/applications/retrieve_rerank/README.html",
+        "https://fastapi.tiangolo.com/tutorial/",
+        "https://www.elastic.co/guide/en/elasticsearch/reference/current/rrf.html"
+      ]
+    },
+    {
+      "query": "delivery",
+      "ndcg_at_10": 0.8771,
+      "recall_at_10": 0.8571,
+      "precision_at_5": 1.0,
+      "unique_hosts_at_10": 10,
+      "elapsed_ms": 51.08,
+      "result_count": 10,
+      "urls": [
+        "https://docs.github.com/en/actions/concepts/workflows-and-actions/workflows",
+        "https://docs.docker.com/build/building/best-practices/",
+        "https://docs.astral.sh/uv/concepts/projects/sync/",
+        "https://research.google/pubs/the-google-cluster-workload-traces/",
+        "https://docs.python.org/3/library/unittest.html",
+        "https://developer.chrome.com/docs/extensions/develop/concepts/service-workers/basics",
+        "https://kubernetes.io/docs/tasks/run-application/horizontal-pod-autoscale/",
+        "https://cheatsheetseries.owasp.org/cheatsheets/DOM_based_XSS_Prevention_Cheat_Sheet.html",
+        "https://docs.pydantic.dev/latest/concepts/models/",
+        "https://www.sbert.net/docs/cross_encoder/usage/usage.html"
+      ]
+    }
+  ]
+}

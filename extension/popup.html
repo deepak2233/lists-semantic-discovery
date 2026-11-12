@@ -1,0 +1,22 @@
+<!doctype html>
+<html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>LISTS | Related pages</title><link rel="stylesheet" href="styles.css"></head>
+<body><main>
+  <header><div class="brand">LISTS<span class="brand-dot">.</span></div><button id="settings" class="quiet">Settings</button></header>
+  <div class="eyebrow">CONTEXTUAL DISCOVERY</div>
+  <h1>Keep the good<br>reading going.</h1>
+  <p class="intro">Find related pages from the article you are reading.</p>
+  <section id="preview" hidden>
+    <label for="title">Page title</label><input id="title" maxlength="300">
+    <label for="summary">Review the excerpt before sharing</label><textarea id="summary" rows="5" maxlength="1800"></textarea>
+    <div id="keywords" class="tags"></div>
+    <label class="check"><input id="samehost" type="checkbox" checked> Discover pages from other websites</label>
+    <p class="disclosure" id="disclosure"></p>
+    <button id="send" class="primary">Find related pages <span aria-hidden="true">↗</span></button>
+  </section>
+  <button id="prepare" class="primary">Preview this page <span aria-hidden="true">↗</span></button>
+  <p id="status" role="status" aria-live="polite"></p>
+  <p id="mode" class="mode" hidden></p>
+  <ul id="results" class="results"></ul>
+  <footer>No browsing history. You choose each page to share.</footer>
+</main><script type="module" src="popup.js"></script></body></html>

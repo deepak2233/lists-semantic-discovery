@@ -1,0 +1,38 @@
+[build-system]
+requires = ["setuptools>=80,<83"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "lists-discovery"
+version = "0.1.0"
+description = "Privacy-conscious contextual web discovery for Chrome"
+requires-python = ">=3.11"
+dependencies = [
+  "fastapi==0.141.1",
+  "uvicorn==0.52.1",
+  "httpx[socks]==0.28.1",
+  "PyJWT[crypto]==2.15.1",
+]
+
+[project.optional-dependencies]
+semantic = ["onnxruntime>=1.22,<2", "tokenizers>=0.22,<0.23", "numpy>=2.2,<3"]
+dev = ["pytest>=8.4,<10", "ruff>=0.14,<1", "pip-audit>=2.9,<3"]
+report = ["reportlab>=4.4,<5"]
+
+[tool.setuptools.packages.find]
+where = ["backend"]
+
+[tool.setuptools.package-data]
+lists_api = ["data/*.json"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["backend"]
+addopts = "-q"
+
+[tool.ruff]
+target-version = "py311"
+line-length = 100
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B"]

@@ -1,0 +1,9 @@
+.git
+.venv
+.env
+models
+output
+tmp
+__pycache__
+.pytest_cache
+.ruff_cache

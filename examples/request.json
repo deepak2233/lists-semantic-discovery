@@ -1,0 +1,9 @@
+{
+  "page_url": "https://reader.example.org/articles/hybrid-search",
+  "title": "Hybrid semantic search and reranking",
+  "summary": "A search application retrieves documents using BM25 and sentence embeddings. Reciprocal rank fusion combines lexical and dense retrieval. A cross encoder can rerank candidate passages for relevance.",
+  "keywords": ["retrieval", "embeddings", "ranking", "BM25"],
+  "language": "en",
+  "limit": 10,
+  "exclude_same_host": true
+}
