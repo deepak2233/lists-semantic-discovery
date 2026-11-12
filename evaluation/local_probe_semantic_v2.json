@@ -1,0 +1,12 @@
+{
+  "label": "LOCAL_PROBE_NOT_PRODUCTION_CAPACITY",
+  "requests": 20,
+  "concurrency": 2,
+  "statuses": {
+    "200": 20
+  },
+  "wall_seconds": 9.259,
+  "throughput_per_second": 2.16,
+  "p50_ms": 893.54,
+  "p95_ms": 1008.8
+}

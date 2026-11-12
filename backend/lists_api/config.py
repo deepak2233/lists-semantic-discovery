@@ -18,6 +18,7 @@ class Settings:
     jwt_jwks_url: str = ""
     jwt_scope: str = "recommend:read"
     allowed_origins: tuple[str, ...] = ()
+    web_origins: tuple[str, ...] = ()
     allowed_hosts: tuple[str, ...] = ("127.0.0.1", "localhost", "testserver")
     semantic_model_path: str = ""
     provider_timeout_seconds: float = 3.0
@@ -40,6 +41,7 @@ class Settings:
             jwt_jwks_url=os.getenv("JWT_JWKS_URL", ""),
             jwt_scope=os.getenv("JWT_REQUIRED_SCOPE", "recommend:read"),
             allowed_origins=csv("LISTS_ALLOWED_ORIGINS"),
+            web_origins=csv("LISTS_WEB_ORIGINS"),
             allowed_hosts=csv("LISTS_ALLOWED_HOSTS", "127.0.0.1,localhost,testserver"),
             semantic_model_path=os.getenv("LISTS_MODEL_PATH", ""),
             provider_timeout_seconds=float(os.getenv("PROVIDER_TIMEOUT_SECONDS", "3")),
@@ -49,8 +51,8 @@ class Settings:
         )
 
     def validate(self) -> None:
-        if self.environment not in {"development", "production"}:
-            raise ValueError("LISTS_ENV must be development or production")
+        if self.environment not in {"development", "demo", "production"}:
+            raise ValueError("LISTS_ENV must be development, demo or production")
         if self.provider not in {"demo", "brave"} or self.auth_mode not in {"none", "jwt"}:
             raise ValueError("Unsupported provider or authentication mode")
         if self.provider == "brave" and not self.brave_api_key:
@@ -64,8 +66,32 @@ class Settings:
             raise ValueError("Use explicit allowed hosts")
         if any(not re.fullmatch(r"chrome-extension://[a-p]{32}", o) for o in self.allowed_origins):
             raise ValueError("Only packaged extension origins are supported")
+        for origin in self.web_origins:
+            parsed = urlsplit(origin)
+            loopback = parsed.hostname in {"localhost", "127.0.0.1"}
+            if (
+                not parsed.netloc
+                or parsed.username
+                or parsed.password
+                or parsed.query
+                or parsed.fragment
+                or parsed.path
+                or (
+                    parsed.scheme != "https"
+                    and not (
+                        self.environment != "production" and parsed.scheme == "http" and loopback
+                    )
+                )
+            ):
+                raise ValueError("Web origins must be exact HTTPS origins or development loopback")
+        if self.environment == "demo" and (self.provider != "demo" or self.auth_mode != "none"):
+            raise ValueError("Public demo mode only permits the fixed corpus and no paid provider")
         if self.environment == "production":
-            if self.auth_mode != "jwt" or self.provider != "brave" or not self.allowed_origins:
+            if (
+                self.auth_mode != "jwt"
+                or self.provider != "brave"
+                or not (self.allowed_origins or self.web_origins)
+            ):
                 raise ValueError(
                     "Production requires JWT auth, live retrieval and explicit origins"
                 )

@@ -14,16 +14,19 @@ class RecommendRequest(BaseModel):
     keywords: list[str] = Field(default_factory=list, max_length=12)
     language: Literal["en"] = "en"
     limit: int = Field(default=10, ge=1, le=10, strict=True)
-    exclude_same_host: bool = True
+    exclude_same_host: bool = Field(default=True, strict=True)
+    ranking: Literal["auto", "lexical", "semantic"] = "auto"
 
     @field_validator("page_url")
     @classmethod
     def clean_url(cls, value: str) -> str:
         return canonical_url(value, drop_query=True)
 
-    @field_validator("title", "summary")
+    @field_validator("title", "summary", mode="before")
     @classmethod
     def clean_text(cls, value: str) -> str:
+        if not isinstance(value, str):
+            raise ValueError("Text must be a string")
         value = redact(re.sub(r"\s+", " ", value)).strip()
         if not value:
             raise ValueError("Empty text")
@@ -34,7 +37,8 @@ class RecommendRequest(BaseModel):
     def clean_keywords(cls, values: list[str]) -> list[str]:
         if any(not isinstance(v, str) or len(v) > 60 for v in values):
             raise ValueError("Keywords must be strings up to 60 characters")
-        return list(dict.fromkeys(redact(v).strip() for v in values if v.strip()))
+        cleaned = [redact(v).strip() for v in values]
+        return list(dict.fromkeys(v for v in cleaned if v and v != "[redacted]"))
 
 
 class Recommendation(BaseModel):
@@ -45,6 +49,9 @@ class Recommendation(BaseModel):
     host: str
     reason: str
     ranking_score: float
+    lexical_score: float = 0.0
+    semantic_similarity: float | None = None
+    provider_rank: int | None = None
 
 
 class RecommendResponse(BaseModel):
@@ -56,4 +63,5 @@ class RecommendResponse(BaseModel):
     candidate_count: int
     cached: bool
     elapsed_ms: float
-    pipeline_version: str = "lists-v1"
+    timings_ms: dict[str, float] = Field(default_factory=dict)
+    pipeline_version: str = "lists-v2"

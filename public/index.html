@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="description" content="Find your next useful read. Test contextual page recommendations with transparent relevance scores and inspectable inference.">
+  <meta name="theme-color" content="#f7f6f2"><title>LISTS | The next good read.</title>
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+  <link rel="stylesheet" href="/assets/styles.css">
+</head>
+<body>
+<a href="#workspace" class="skip-link">Skip to inference workspace</a>
+<header class="site-header shell">
+  <a class="wordmark" href="/" aria-label="LISTS home"><span class="logo-icon" aria-hidden="true"><i></i><i></i><i></i></span>LISTS<span class="orange">.</span></a>
+  <nav aria-label="Main navigation"><a class="nav-active" href="#workspace">Playground</a><a href="#how-it-works">How it works</a><a href="https://github.com/deepak2233/lists-semantic-discovery" target="_blank" rel="noopener noreferrer">Source code <span aria-hidden="true"><svg class="external-arrow" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 18 18 6M6 6h12v12"/></svg></span></a></nav>
+  <span class="header-status" id="connection"><span class="status-dot"></span><span id="connection-text">Connecting to inference</span></span>
+</header>
+<main>
+  <section class="hero shell" aria-labelledby="hero-heading">
+    <div class="hero-copy"><p class="eyebrow"><span></span> CONTEXTUAL WEB DISCOVERY</p>
+      <h1 id="hero-heading">One good read<br>deserves <em>another.</em></h1>
+      <p class="hero-description">Turn what you’re reading into what to read next.<br>Related pages, clear reasons, less searching.</p>
+      <div class="hero-tags"><span><svg aria-hidden="true" viewBox="0 0 20 20"><path d="m4 10 4 4 8-8"/></svg> Real ranking</span><span><svg aria-hidden="true" viewBox="0 0 20 20"><path d="m4 10 4 4 8-8"/></svg> Inspectable results</span><span><svg aria-hidden="true" viewBox="0 0 20 20"><path d="m4 10 4 4 8-8"/></svg> No browsing history</span></div>
+    </div>
+    <div class="hero-art" aria-hidden="true">
+      <div class="orbit orbit-one"></div><div class="orbit orbit-two"></div>
+      <div class="art-card art-source"><span class="art-label"><span class="tiny-square"></span> YOUR CURRENT READ</span><span class="art-title">A little context.<br>A whole new direction.</span><div class="art-lines"><i></i><i></i><i></i></div><span class="art-source-footer">Read. Connect. Discover. <b><svg class="external-arrow" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 18 18 6M6 6h12v12"/></svg></b></span></div>
+      <div class="connector-line"></div><div class="art-spark" aria-hidden="true">*</div>
+      <div class="art-card art-related"><span class="art-label">THE NEXT CHAPTER</span><span class="art-related-title">Something worth<br>opening another tab for.</span><span class="art-related-footer"><span class="related-dots"><i></i><i></i><i></i></span> A more relevant web.</span></div>
+      <span class="art-caption">CONNECTED BY MEANING, NOT CHANCE.</span>
+    </div>
+  </section>
+
+  <section class="workspace shell" id="workspace" aria-labelledby="workspace-heading">
+    <div class="workspace-heading"><div><p class="eyebrow">THE INFERENCE PLAYGROUND</p><h2 id="workspace-heading">Start with a little context.</h2></div><div class="mode-pill" id="mode-pill"><span class="status-dot"></span><span id="mode-text">Checking server</span></div></div>
+    <div class="workspace-grid">
+      <aside class="input-panel">
+        <div class="panel-top"><span class="section-number">01</span><h3>Your reading context</h3><button id="reset" class="text-button" type="button">Reset</button></div>
+        <p class="panel-intro">Paste a public excerpt, or take an example for a spin.</p>
+        <div class="examples" aria-label="Example contexts"><button type="button" data-example="hybrid" class="example active">Hybrid search</button><button type="button" data-example="kafka" class="example">Kafka reliability</button><button type="button" data-example="chrome" class="example">Chrome extensions</button></div>
+        <form id="inference-form">
+          <label for="page-title">Article title <span class="field-note">Required</span></label>
+          <input id="page-title" name="title" type="text" required minlength="3" maxlength="300" autocomplete="off" placeholder="What are you reading about?">
+          <div class="field-label"><label for="excerpt">Article excerpt</label><span id="character-count" class="field-note">0 / 1,800</span></div>
+          <textarea id="excerpt" name="excerpt" rows="7" required minlength="40" maxlength="1800" placeholder="Paste a few useful paragraphs from a public article…" aria-describedby="excerpt-hint"></textarea>
+          <p id="excerpt-hint" class="field-hint">40–1,800 characters. Review your text before sending.</p>
+          <label for="page-url">Page address <span class="field-note">Optional</span></label>
+          <input id="page-url" name="url" type="url" maxlength="2048" autocomplete="off" placeholder="https://example.com/article">
+          <p class="field-hint">Used to exclude the current page. The server never fetches it.</p>
+          <div class="options-row"><div><label for="ranking-mode">Ranking mode</label><select id="ranking-mode" name="ranking"><option value="auto">Balanced · automatic</option><option value="lexical">Lexical baseline · BM25</option><option value="semantic" id="semantic-option">Semantic hybrid · MiniLM</option></select></div><div class="limit-field"><label for="result-limit">Results</label><select id="result-limit" name="limit"><option value="5">5</option><option value="10" selected>10</option></select></div></div>
+          <label class="checkbox-label"><input id="other-sites" type="checkbox" checked><span>Explore pages from other websites</span></label>
+          <details class="session-options" id="session-options" hidden><summary>Protected API session</summary><label for="access-token">Short-lived access token</label><input id="access-token" type="password" autocomplete="off" placeholder="Your user access token"><p class="field-hint">Used only for this page session. Never paste a search-provider key.</p></details>
+          <button type="submit" id="run" class="run-button"><span id="run-text">Discover related pages</span><span class="run-arrow" aria-hidden="true"><svg class="external-arrow" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 18 18 6M6 6h12v12"/></svg></span></button>
+          <button id="cancel" type="button" class="cancel-button" hidden>Cancel request</button>
+          <p class="privacy-note"><svg aria-hidden="true" viewBox="0 0 20 20"><rect x="5" y="8" width="10" height="8" rx="2"/><path d="M7 8V5a3 3 0 0 1 6 0v3"/></svg><span>Only your reviewed context is sent. No browsing history is collected. Automatic redaction is incomplete.</span></p>
+        </form>
+      </aside>
+
+      <section class="output-panel" aria-labelledby="results-heading">
+        <div class="output-top"><div class="results-title"><span class="section-number">02</span><h3 id="results-heading">Your next good reads</h3><span id="result-badge" class="count-badge" hidden>0</span></div><div class="view-tabs" role="tablist" aria-label="Output view"><button type="button" role="tab" aria-selected="true" aria-controls="recommendations-view" id="recommendations-tab" class="view-tab active">Recommendations</button><button type="button" role="tab" aria-selected="false" aria-controls="inspection-view" id="inspection-tab" class="view-tab">Inspect API</button></div></div>
+        <div id="status" class="inference-status" role="status" aria-live="polite">Ready when you are. Your next good read starts here.</div>
+        <div id="error" class="error-panel" role="alert" hidden><strong id="error-title">Something needs a second look.</strong><p id="error-message"></p><button id="retry" class="text-button" type="button">Try again <svg class="external-arrow" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 18 18 6M6 6h12v12"/></svg></button></div>
+        <div id="summary-bar" class="summary-bar" hidden><span><b id="candidate-count">0</b> candidates</span><span><b id="source-count">0</b> sources</span><span><b id="elapsed">0</b> ms server time</span><span id="actual-ranker"></span></div>
+        <div id="recommendations-view" role="tabpanel" aria-labelledby="recommendations-tab">
+          <div class="empty-state" id="empty-state"><div class="empty-illustration" aria-hidden="true"><div class="empty-sheet"><i></i><i></i><i></i></div><span><svg class="external-arrow" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 18 18 6M6 6h12v12"/></svg></span></div><h4>A useful detour is one click away.</h4><p>Add your context on the left.<br>We’ll connect it to pages worth your time.</p><div class="empty-hint"><span class="hint-dot"></span> Try “Hybrid search” to get started</div></div>
+          <div class="loading-state" id="loading" hidden aria-label="Ranking candidates"><div class="skeleton-card"><i></i><i></i><i></i></div><div class="skeleton-card"><i></i><i></i><i></i></div><div class="skeleton-card"><i></i><i></i><i></i></div></div>
+          <ol id="results" class="result-list"></ol>
+          <p id="no-results" class="no-results" hidden>No distinct, relevant pages were found. Try a more specific excerpt or include the source website.</p>
+          <p id="result-note" class="result-note" hidden>Ranking scores are relative to this request, not relevance probabilities.</p>
+        </div>
+        <div id="inspection-view" role="tabpanel" aria-labelledby="inspection-tab" hidden><div class="inspection-heading"><span>POST /v1/recommend</span><button id="copy-request" type="button" class="text-button">Copy request</button></div><pre id="request-json">Run an inference to inspect the exact request.</pre><div class="inspection-heading"><span>SERVER RESPONSE</span><button id="copy-response" type="button" class="text-button">Copy response</button></div><pre id="response-json">The actual API response will appear here.</pre></div>
+        <div id="warnings" class="warnings" hidden></div>
+        <div class="pipeline-strip" aria-label="Recommendation pipeline"><span class="pipeline-label">UNDER THE HOOD</span><span><b>1</b> Context</span><i>→</i><span><b>2</b> Retrieve</span><i>→</i><span><b>3</b> Rank</span><i>→</i><span><b>4</b> Diversify</span></div>
+      </section>
+    </div>
+    <p id="dataset-disclosure" class="dataset-disclosure">This deployment reports its candidate source and active ranking model. Results are never silently substituted.</p>
+  </section>
+
+  <section class="how-section shell" id="how-it-works" aria-labelledby="how-heading"><div><p class="eyebrow">THOUGHTFUL BY DESIGN</p><h2 id="how-heading">Less noise.<br>More “that’s useful.”</h2></div><div class="principles"><article><span>01 / CONTEXT FIRST</span><h3>Follow the idea.</h3><p>Your title and excerpt describe what matters. Local extraction builds a focused query without a browsing profile.</p></article><article><span>02 / RELEVANCE YOU CAN SEE</span><h3>Know why it’s here.</h3><p>Shared topics and optional semantic similarity make every recommendation easier to inspect.</p></article><article><span>03 / ROOM TO EXPLORE</span><h3>Skip the repetition.</h3><p>Duplicate removal and a two-result host cap make space for different sources and perspectives.</p></article></div></section>
+</main>
+<footer class="site-footer shell"><a class="wordmark" href="/">LISTS<span class="orange">.</span></a><span>Built for the curious. Engineered to be inspected.</span><a href="https://github.com/deepak2233/lists-semantic-discovery" target="_blank" rel="noopener noreferrer">Explore the project <svg class="external-arrow" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 18 18 6M6 6h12v12"/></svg></a></footer>
+<script type="module" src="/assets/app.js"></script>
+</body></html>

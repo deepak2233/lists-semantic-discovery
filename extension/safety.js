@@ -1,6 +1,6 @@
 export function publicPageUrl(value) {
   const url = new URL(value);
-  const host = url.hostname.toLowerCase();
+  const host = url.hostname.toLowerCase().replace(/\.$/, "");
   if (!["https:", "http:"].includes(url.protocol) || url.username || url.password ||
       !host.includes(".") || /(?:\.local|\.internal|\.localhost)$/.test(host) ||
       /^[\d.]+$/.test(host) || host.includes(":") ||

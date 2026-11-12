@@ -93,7 +93,7 @@ All browser code is packaged locally. This extension does not need a background 
 7. In a protected deployment, JWT verification checks RS256 signatures, issuer, audience, expiration, issued-at, subject and the required scope. The trusted JWKS location comes from deployment configuration, never from the request.
 8. A per-subject limit and bounded concurrency protect the service. Cache entries, if enabled, are isolated by subject and expire within five minutes. Caching is off by default pending provider terms review.
 9. The query builder uses sanitized title/topic words. The live provider makes up to two sequential requests for 20 web results each under one deadline. It requests strict provider safe search. It performs no arbitrary page fetches.
-10. The ranker drops unsafe links, the current page, exact canonical duplicates, near-identical titles and optionally the exact source host. Remaining results receive lexical and optional dense scores.
+10. The ranker drops unsafe links, the current page, exact canonical duplicates, near-identical title/snippet pairs and optionally the exact source host. Identical generic titles with distinct descriptions survive. Remaining results receive lexical and optional dense scores.
 11. Rank fusion combines orderings. Diversity selection chooses at most ten results, capped at two per exact host. The UI renders text nodes and safe links, with short shared-topic explanations.
 12. The response carries a new request ID, mode, ranker version, candidate count, elapsed time and warnings. Application logs contain status and request ID only.
 
@@ -133,7 +133,7 @@ Rank fusion avoids adding incomparable raw scales. It still does not guarantee a
 
 ### 6.6 Duplicate control and diversity
 
-Canonicalization removes fragments/tracking parameters and normalizes host/scheme formatting. Identity comparison treats www and trailing slash variants as equivalent for duplicate detection. Nontracking query keys are retained for candidate URLs so meaningful links are not broken.
+Canonicalization removes fragments and ordinary tracking parameters and normalizes host/scheme formatting. Identity comparison treats www and trailing slash variants as equivalent for duplicate detection. Nontracking query keys retain their order, repetitions and escaping. Recognized signed query strings are preserved intact, including tracking-looking keys, to avoid breaking signatures. Unknown signature conventions remain a documented limitation.
 
 Selection uses `0.8 * normalized_fused_relevance - 0.2 * maximum_Jaccard_similarity_to_selected`. This is an MMR-style adaptation using lexical redundancy. It is not the original paper's exact experimental setup. Each exact host has a cap of two. Subdomains and independently hosted mirrors can still evade this cap; production domain grouping needs the public suffix list and a measured dedup strategy.
 
@@ -151,17 +151,21 @@ There is no LLM in this request path. An LLM adds cost and failure modes without
   "keywords": ["hybrid search", "embeddings", "reranking"],
   "language": "en",
   "limit": 10,
+  "ranking": "auto",
   "exclude_same_host": true
 }
 ```
 
-Response fields include request ID, `demo` or `live` mode, actual ranker name, results, warnings, candidate count, cache status and backend elapsed milliseconds. Each result has an opaque URL-derived ID, safe URL, title, snippet, host, explanation and request-local ranking score. The generated OpenAPI contract is available in development.
+The same-origin inference webpage and extension use this contract. `ranking` selects `auto`, `lexical` or `semantic`; an explicit semantic request requires a configured model. `GET /v1/config` reports actual candidate mode, ranker, semantic availability, authentication requirement and corpus size.
+
+Response fields include request ID, `demo` or `live` mode, actual ranker name, results, warnings, candidate count, cache status, backend elapsed milliseconds, stage timings and pipeline version. Each result has an opaque URL-derived ID, safe URL, title, snippet, host, explanation, request-local fused ranking score, BM25 score, optional cosine similarity and optional provider rank. Diversity selection can place a lower fused score before a higher score. The generated OpenAPI contract is available in development.
 
 | Status | Meaning | Client action |
 | --- | --- | --- |
 | 200 | Completed, including an honest empty result set | Display results and warnings |
 | 401 | Missing, invalid or expired access token | Renew the user's token |
 | 403 | Browser origin is not allowed | Check approved extension configuration |
+| 409 | Explicit semantic mode has no configured model | Select lexical/auto or configure the model |
 | 413 | Raw body exceeds 16 KiB | Reduce input |
 | 422 | Unsupported or invalid request fields | Correct the preview |
 | 429 | User request quota reached | Respect Retry-After |

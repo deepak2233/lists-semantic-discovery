@@ -18,6 +18,9 @@ class Authenticator:
 
     def validate(self, token: str) -> str:
         assert self.jwks is not None
+        header = jwt.get_unverified_header(token)
+        if header.get("alg") != "RS256" or len(str(header.get("kid", ""))) > 256:
+            raise jwt.InvalidTokenError("Unsupported signing header")
         key = self.jwks.get_signing_key_from_jwt(token).key
         claims = jwt.decode(
             token,
@@ -46,6 +49,10 @@ class Authenticator:
             )
         try:
             return await run_in_threadpool(self.validate, header[7:])
+        except jwt.PyJWKClientConnectionError:
+            raise HTTPException(
+                503, "Identity service is temporarily unavailable", headers={"Retry-After": "30"}
+            ) from None
         except (jwt.PyJWTError, ValueError, OSError):
             raise HTTPException(
                 401, "Access token is invalid or expired", headers={"WWW-Authenticate": "Bearer"}

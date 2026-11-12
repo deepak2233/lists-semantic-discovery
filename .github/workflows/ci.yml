@@ -26,6 +26,7 @@ jobs:
       - name: Tests and authored relevance regression
         run: |
           npm ci
+          npm run build
           uv run --no-sync pytest
           npm test
           uv run --no-sync python scripts/evaluate.py --output output/ci-evaluation.json
@@ -33,3 +34,4 @@ jobs:
         run: |
           uv export --frozen --no-dev --no-emit-project --no-hashes --output-file /tmp/lists-production-requirements.txt
           uv run --no-sync pip-audit -r /tmp/lists-production-requirements.txt
+          uv run --no-sync pip-audit -r deploy/vercel-requirements.txt

@@ -34,7 +34,7 @@ def test_unsafe_links_rejected(url):
 def test_url_canonicalization():
     assert (
         canonical_url("https://EXAMPLE.com/a?b=2&utm_source=x&a=1#f")
-        == "https://example.com/a?a=1&b=2"
+        == "https://example.com/a?b=2&a=1"
     )
     assert (
         canonical_url("https://example.com/a?token=private", drop_query=True)

@@ -37,6 +37,22 @@
         }
       }
     },
+    "/v1/config": {
+      "get": {
+        "summary": "Configuration",
+        "operationId": "configuration_v1_config_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    },
     "/metrics": {
       "get": {
         "summary": "Metrics",
@@ -153,6 +169,16 @@
             "type": "boolean",
             "title": "Exclude Same Host",
             "default": true
+          },
+          "ranking": {
+            "type": "string",
+            "enum": [
+              "auto",
+              "lexical",
+              "semantic"
+            ],
+            "title": "Ranking",
+            "default": "auto"
           }
         },
         "additionalProperties": false,
@@ -208,10 +234,17 @@
             "type": "number",
             "title": "Elapsed Ms"
           },
+          "timings_ms": {
+            "additionalProperties": {
+              "type": "number"
+            },
+            "type": "object",
+            "title": "Timings Ms"
+          },
           "pipeline_version": {
             "type": "string",
             "title": "Pipeline Version",
-            "default": "lists-v1"
+            "default": "lists-v2"
           }
         },
         "type": "object",
@@ -256,6 +289,33 @@
           "ranking_score": {
             "type": "number",
             "title": "Ranking Score"
+          },
+          "lexical_score": {
+            "type": "number",
+            "title": "Lexical Score",
+            "default": 0.0
+          },
+          "semantic_similarity": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Semantic Similarity"
+          },
+          "provider_rank": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Provider Rank"
           }
         },
         "type": "object",

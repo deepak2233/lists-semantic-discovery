@@ -50,4 +50,27 @@ These are eight authored examples over 44 authored descriptions. Labels were cre
 - Distributed quota/cache behavior, multi-replica failover, load beyond the small local probe or production SLOs.
 - Independent relevance judgments, general-interest web coverage, store approval, accessibility certification or legal/compliance review.
 
-Repository publication is reported separately in the delivery message because it depends on GitHub access. This record does not imply that CI ran on GitHub or that a hosted service was deployed.
+Repository publication and hosted deployment are reported separately. Local build and browser results alone do not establish that a Vercel deployment is live.
+
+
+## Inference webpage and edge-case revision
+
+Verified on 12 November 2026 UTC using the same runtime versions. This revision adds the shared inference webpage, request-level ranker selection, score diagnostics and deployment packaging.
+
+| Check | Observed result | Practical scope |
+| --- | --- | --- |
+| Python tests | 92 passed | Added normalized validation, signed links, generic-title deduplication, identity outage, cache/rate expiry and webpage API cases |
+| Node tests | 35 passed | Extension plus playground interaction tests, including cancellation, stale results, body timeouts, unsafe text/links and token-free JSON copying |
+| Ruff and diff whitespace | Passed | Python source and changed-file whitespace |
+| Vercel build script | Passed locally | Hashed runtime export installed; 90,405,214-byte ONNX artifact and tokenizer verified |
+| Isolated deployment runtime | Passed with Python `-S` | Imported only the vendored runtime graph, simulated Vercel host/origin configuration and executed five real semantic recommendations |
+| Semantic dependency audit | No known vulnerabilities reported | Frozen production plus semantic dependency graph at verification time |
+| Browser to API to results | Passed in actual Chrome preview | Ten semantic results, five lexical results, actual request/response inspector, invalid private-source feedback |
+| Responsive CSS | Implemented; narrow browser viewport not verified | Desktop browser QA is complete; mobile-device acceptance remains open |
+| Relevance regression | Unchanged aggregate metrics above | Both lexical and semantic variants re-executed over the same authored set |
+
+The browser screenshot is `docs/assets/playground-desktop.jpg`. It shows a local fixed-corpus inference run, not a live-web provider or production Vercel response. Browser-host extension metadata errors were observed; no application error was identified in the inspected logs.
+
+The updated semantic HTTP probe returned 20/20 HTTP 200 at concurrency 2, p50 893.54 ms, p95 1008.80 ms and 2.16 requests/s. Raw data is `evaluation/local_probe_semantic_v2.json`. It remains a loopback check, not a capacity claim or serverless cold-start benchmark.
+
+The edge-case matrix in [EDGE_CASES.md](EDGE_CASES.md) describes both regressions and known gaps. Complete corner-case coverage is not claimed. Vercel publication still requires access to the intended project team and actual post-deployment checks.

@@ -1,0 +1,8 @@
+.git
+.venv
+node_modules
+tmp
+output
+.env
+.env.*
+!.env.example

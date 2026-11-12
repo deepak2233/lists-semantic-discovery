@@ -24,12 +24,12 @@ class RateLimiter:
         if subject not in self.windows and len(self.windows) >= self.max_subjects:
             return False
         window = self.windows.setdefault(subject, deque())
-        self.windows.move_to_end(subject)
         while window and window[0] <= now - 60:
             window.popleft()
         if len(window) >= self.limit:
             return False
         window.append(now)
+        self.windows.move_to_end(subject)
         return True
 
 

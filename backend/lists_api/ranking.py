@@ -12,7 +12,7 @@ from .schemas import Recommendation, RecommendRequest
 STOP = set(
     "a an and are as at be been by can for from has have how i if in into is it its "
     "of on or our that the their these this to use using was we were what when which "
-    "will with you your page website read learn more guide introduction".split()
+    "will with you your page website read learn more guide introduction redacted".split()
 )
 
 
@@ -63,6 +63,7 @@ class Ranker:
         candidates: list[Candidate],
         *,
         use_provider_rank: bool = True,
+        use_semantic: bool = True,
     ) -> tuple[list[Recommendation], int]:
         filtered, seen = [], set()
         source = page_identity(request.page_url)
@@ -77,7 +78,11 @@ class Ranker:
                 continue
             if request.exclude_same_host and host_of(url) == host_of(request.page_url):
                 continue
-            if any(jaccard(candidate.title, c.title) > 0.9 for c in filtered):
+            if any(
+                jaccard(candidate.title, c.title) > 0.9
+                and jaccard(candidate.snippet, c.snippet) > 0.85
+                for c in filtered
+            ):
                 continue
             seen.add(identity)
             filtered.append(
@@ -89,13 +94,17 @@ class Ranker:
         context = f"{request.title} {request.summary} {' '.join(request.keywords)}"
         lexical = bm25(context, texts)
         similarities = None
-        if self.model:
+        if self.model and use_semantic:
             # Bounded summaries: avoid silently encoding only the title of a long source page.
             query = f"{request.title[:200]}. {request.summary[:850]}"
             vectors = self.model.encode(
                 [query, *texts], normalize_embeddings=True, show_progress_bar=False, batch_size=32
             )
             similarities = (vectors[1:] @ vectors[0]).tolist()
+            if len(similarities) != len(filtered) or any(
+                not math.isfinite(v) for v in similarities
+            ):
+                raise ValueError("Semantic model returned invalid similarity scores")
         # No zero-overlap filler in lexical mode. Dense mode has a tunable, uncalibrated floor.
         eligible = [
             i
@@ -144,6 +153,9 @@ class Ranker:
                     host=host_of(d.url),
                     reason=reason,
                     ranking_score=round(relevance[i], 5),
+                    lexical_score=round(lexical[i], 5),
+                    semantic_similarity=round(similarities[i], 5) if similarities else None,
+                    provider_rank=d.provider_rank if use_provider_rank else None,
                 )
             )
         return output, len(filtered)

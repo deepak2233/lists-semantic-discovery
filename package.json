@@ -3,7 +3,9 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "test": "node --test tests/*.test.js"
+    "test": "node --test tests/*.test.js",
+    "build": "python3 scripts/build_web.py",
+    "dev": ".venv/bin/python scripts/dev_web.py"
   },
   "devDependencies": {
     "jsdom": "^26.1.0"
