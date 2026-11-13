@@ -12,10 +12,14 @@ dependencies = [
   "uvicorn==0.52.1",
   "httpx[socks]==0.28.1",
   "PyJWT[crypto]==2.15.1",
+  "onnxruntime>=1.22,<2",
+  "tokenizers>=0.22,<0.23",
+  "numpy>=2.2,<3",
 ]
 
 [project.optional-dependencies]
-semantic = ["onnxruntime>=1.22,<2", "tokenizers>=0.22,<0.23", "numpy>=2.2,<3"]
+# Compatibility extra: semantic inference is now part of the deployed runtime graph.
+semantic = []
 dev = ["pytest>=8.4,<10", "ruff>=0.14,<1", "pip-audit>=2.9,<3"]
 report = ["reportlab>=4.4,<5"]
 

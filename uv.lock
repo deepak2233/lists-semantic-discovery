@@ -595,7 +595,11 @@ source = { editable = "." }
 dependencies = [
     { name = "fastapi" },
     { name = "httpx", extra = ["socks"] },
+    { name = "numpy", version = "2.4.6", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.12'" },
+    { name = "numpy", version = "2.5.4", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.12'" },
+    { name = "onnxruntime" },
     { name = "pyjwt", extra = ["crypto"] },
+    { name = "tokenizers" },
     { name = "uvicorn" },
 ]
 
@@ -608,25 +612,19 @@ dev = [
 report = [
     { name = "reportlab" },
 ]
-semantic = [
-    { name = "numpy", version = "2.4.6", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.12'" },
-    { name = "numpy", version = "2.5.4", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.12'" },
-    { name = "onnxruntime" },
-    { name = "tokenizers" },
-]
 
 [package.metadata]
 requires-dist = [
     { name = "fastapi", specifier = "==0.141.1" },
     { name = "httpx", extras = ["socks"], specifier = "==0.28.1" },
-    { name = "numpy", marker = "extra == 'semantic'", specifier = ">=2.2,<3" },
-    { name = "onnxruntime", marker = "extra == 'semantic'", specifier = ">=1.22,<2" },
+    { name = "numpy", specifier = ">=2.2,<3" },
+    { name = "onnxruntime", specifier = ">=1.22,<2" },
     { name = "pip-audit", marker = "extra == 'dev'", specifier = ">=2.9,<3" },
     { name = "pyjwt", extras = ["crypto"], specifier = "==2.15.1" },
     { name = "pytest", marker = "extra == 'dev'", specifier = ">=8.4,<10" },
     { name = "reportlab", marker = "extra == 'report'", specifier = ">=4.4,<5" },
     { name = "ruff", marker = "extra == 'dev'", specifier = ">=0.14,<1" },
-    { name = "tokenizers", marker = "extra == 'semantic'", specifier = ">=0.22,<0.23" },
+    { name = "tokenizers", specifier = ">=0.22,<0.23" },
     { name = "uvicorn", specifier = "==0.52.1" },
 ]
 provides-extras = ["semantic", "dev", "report"]

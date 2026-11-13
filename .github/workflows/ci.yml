@@ -27,9 +27,17 @@ jobs:
         run: |
           npm ci
           npm run build
+          git diff --exit-code -- public/assets/nlp.js public/assets/safety.js
           uv run --no-sync pytest
           npm test
           uv run --no-sync python scripts/evaluate.py --output output/ci-evaluation.json
+      - name: Verify the web app with only production dependencies
+        run: |
+          uv run --no-sync python scripts/build_vercel.py
+          uv export --frozen --no-dev --no-emit-project --output-file /tmp/lists-runtime-requirements.txt
+          uv venv /tmp/lists-runtime
+          uv pip install --python /tmp/lists-runtime/bin/python --require-hashes -r /tmp/lists-runtime-requirements.txt
+          /tmp/lists-runtime/bin/python scripts/verify_web.py --model-path models/minilm
       - name: Audit locked production dependencies
         run: |
           uv export --frozen --no-dev --no-emit-project --no-hashes --output-file /tmp/lists-production-requirements.txt

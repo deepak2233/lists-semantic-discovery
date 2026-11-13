@@ -38,6 +38,7 @@ test("page starts with a labeled real mode and never auto-submits an excerpt", a
   const t = await setup();
   assert.equal(t.calls.length, 1);
   assert.equal(t.calls[0].url, "/v1/config");
+  assert.equal(t.calls[0].init.credentials, "same-origin");
   assert.match(t.$("mode-text").textContent, /Demo corpus.*Lexical/);
   assert.match(t.$("dataset-disclosure").textContent, /44.*not live web discovery/);
   assert.equal(t.$("semantic-option").disabled, true);
@@ -48,6 +49,7 @@ test("valid inference displays server scores and inspectable request/response", 
   const t = await setup();
   t.submit(); await flush();
   assert.equal(t.calls.filter(c => c.url === "/v1/recommend").length, 1);
+  assert.equal(t.calls.find(c => c.url === "/v1/recommend").init.credentials, "same-origin");
   assert.equal(t.$("results").children.length, 1);
   assert.match(t.$("results").textContent, /0\.950/);
   assert.match(t.$("results").textContent, /BM25 8\.10/);
@@ -55,6 +57,20 @@ test("valid inference displays server scores and inspectable request/response", 
   assert.equal(JSON.parse(t.$("response-json").textContent).request_id, "test-request-123");
   assert.equal(JSON.parse(t.$("request-json").textContent).limit, 10);
   assert.equal(t.$("run").disabled, false);
+  t.close();
+});
+
+test("successful inference recovers from an unavailable startup capability check", async () => {
+  const t = await setup(undefined, {fetch: async url => {
+    if (url === "/v1/config") throw new TypeError("Cold startup unavailable");
+    return response(responseData());
+  }});
+  assert.match(t.$("connection-text").textContent, /unavailable/);
+  t.submit(); await flush();
+  assert.equal(t.$("connection-text").textContent, "Inference online");
+  assert.match(t.$("mode-text").textContent, /Demo corpus.*Lexical/);
+  assert.equal(t.$("connection").classList.contains("offline"), false);
+  assert.equal(t.$("results").children.length, 1);
   t.close();
 });
 

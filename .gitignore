@@ -15,5 +15,3 @@ output/
 !output/.gitkeep
 vendor/
 .vercel/
-public/assets/nlp.js
-public/assets/safety.js

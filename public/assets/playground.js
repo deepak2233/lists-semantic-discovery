@@ -45,6 +45,7 @@ export function initPlayground({document, fetch, clipboard, timeoutMs = 20000}) 
   let lastRequest = null;
   let lastResponse = null;
   let configuration = null;
+  let hasInference = false;
 
   const show = (id, visible) => {$(id).hidden = !visible;};
   const status = text => {$("status").textContent = text;};
@@ -92,6 +93,12 @@ export function initPlayground({document, fetch, clipboard, timeoutMs = 20000}) 
   }
 
   function render(data) {
+    hasInference = true;
+    $("connection").classList.remove("offline");
+    $("connection-text").textContent = "Inference online";
+    if (!configuration) {
+      $("mode-text").textContent = `${data.mode === "demo" ? "Demo corpus" : "Live web"} · ${data.ranker.includes("minilm") ? "Semantic" : "Lexical"}`;
+    }
     const list = $("results");
     list.replaceChildren();
     let displayed = 0;
@@ -187,7 +194,7 @@ export function initPlayground({document, fetch, clipboard, timeoutMs = 20000}) 
         const token = $("access-token").value.trim();
         response = await fetch("/v1/recommend", {method: "POST", headers: {"Content-Type": "application/json",
           ...(token ? {Authorization: `Bearer ${token}`} : {})}, body: JSON.stringify(payload),
-          credentials: "omit", redirect: "error", signal: requestController.signal});
+          credentials: "same-origin", redirect: "error", signal: requestController.signal});
       } catch (error) {
         if (timedOut) throw new Error("The request timed out. Please try again in a moment.");
         throw error;
@@ -267,8 +274,8 @@ export function initPlayground({document, fetch, clipboard, timeoutMs = 20000}) 
   status("Ready when you are. Your next good read starts here.");
   const ready = (async () => {
     try {
-      const response = await fetch("/v1/config", {credentials: "omit", redirect: "error",
-        signal: AbortSignal.timeout(8000)});
+      const response = await fetch("/v1/config", {credentials: "same-origin", redirect: "error",
+        signal: AbortSignal.timeout(20000)});
       if (!response.ok) throw new Error("Unavailable");
       const config = await response.json();
       if (!["demo", "live"].includes(config.mode) || typeof config.semantic_available !== "boolean") throw new Error("Invalid configuration");
@@ -282,7 +289,7 @@ export function initPlayground({document, fetch, clipboard, timeoutMs = 20000}) 
         `Demo corpus: ${config.corpus_documents} authored technical-resource descriptions. This is real ${config.semantic_available ? "MiniLM + BM25" : "BM25"} ranking over a fixed collection, not live web discovery.` :
         "Live web candidates are retrieved from the configured search provider. Your reviewed context is sent to this server; derived topic queries also go to that provider.";
     } catch {
-      if (!active) return;
+      if (!active || hasInference) return;
       $("connection").classList.add("offline");
       $("connection-text").textContent = "Connection unavailable";
       $("mode-text").textContent = "Server unavailable";

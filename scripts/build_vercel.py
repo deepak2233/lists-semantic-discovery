@@ -13,18 +13,10 @@ def main():
     if os.getenv("LISTS_BUILD_SEMANTIC", "1") == "0":
         print("Explicit lexical deployment selected; semantic capability will report unavailable.")
         return
+    # Vercel packages the declared runtime graph, not packages added after its dependency scan.
+    # Fail this build immediately if that graph cannot load the actual inference dependencies.
     subprocess.run(
-        [
-            "uv",
-            "pip",
-            "install",
-            "--python",
-            sys.executable,
-            "--requirement",
-            "deploy/vercel-requirements.txt",
-        ],
-        cwd=ROOT,
-        check=True,
+        [sys.executable, "-c", "import onnxruntime, tokenizers, numpy"], cwd=ROOT, check=True
     )
     environment = os.environ.copy()
     environment["PYTHONPATH"] = str(ROOT / "backend")

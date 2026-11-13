@@ -9,8 +9,8 @@ The default website is a **fixed-corpus demonstration with real inference**. It 
 ## Build contract
 
 1. Vercel recognizes root `app.py` as the FastAPI entrypoint and Python 3.12 from `.python-version`.
-2. The normal Python project dependencies come from the committed `pyproject.toml` and `uv.lock`.
-3. `scripts/build_vercel.py` prepares shared frontend helpers, installs the exported, hashed production/semantic dependency graph into Vercel's managed Python environment, and downloads the pinned model at build time. It does not create a second vendored copy of the installed packages.
+2. All inference libraries are declared as normal runtime dependencies in `pyproject.toml` and `uv.lock`. Vercel uses that graph when packaging dependencies for startup. Installing an optional library during the build command does not establish that it will be present in the deployed runtime.
+3. `scripts/build_vercel.py` prepares shared frontend helpers, verifies the installed inference imports, and downloads the pinned model at build time. It does not install a second dependency graph or create vendored copies.
 4. `app.py` exposes the shared backend package. The API loads only local, checksum-verified model files at startup.
 5. `vercel.json` sets a 30-second function duration, excludes development files from the bundle and applies security headers to CDN/function responses.
 
