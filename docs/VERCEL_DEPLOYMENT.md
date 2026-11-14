@@ -10,11 +10,11 @@ The default website is a **fixed-corpus demonstration with real inference**. It 
 
 1. Vercel recognizes root `app.py` as the FastAPI entrypoint and Python 3.12 from `.python-version`.
 2. All inference libraries are declared as normal runtime dependencies in `pyproject.toml` and `uv.lock`. Vercel uses that graph when packaging dependencies for startup. Installing an optional library during the build command does not establish that it will be present in the deployed runtime.
-3. `scripts/build_vercel.py` prepares shared frontend helpers, verifies the installed inference imports, and downloads the pinned model at build time. It does not install a second dependency graph or create vendored copies.
+3. `scripts/build_vercel.py` prepares shared frontend helpers and verifies the installed inference imports. A separate, frozen CPU export environment in `tmp/export-env` downloads the pinned base, merges the committed SNLI LoRA adapter and reconstructs both reviewed INT8 encoders. No training occurs during builds. Torch and export tools are excluded from the inference function; there are no vendored runtime copies.
 4. `app.py` exposes the shared backend package. The API loads only local, checksum-verified model files at startup.
 5. `vercel.json` sets a 30-second function duration, excludes development files from the bundle and applies security headers to CDN/function responses.
 
-`.vercel/`, model artifacts, local environments and generated helper copies are excluded from Git. The deployment build reconstructs the required files. There are no tokens in the source or build command.
+`.vercel/`, generated ONNX files, raw training data and local environments are excluded from Git. The small trained adapter, reports, provenance and shared frontend helpers are committed. The deployment build reconstructs and verifies the ONNX files. Training sources, adapter sources, the base PyTorch download and the isolated export environment are excluded from the function bundle. There are no tokens in the source or build command.
 
 To regenerate the runtime export after a dependency change:
 
@@ -67,3 +67,7 @@ The Python function bundle has a platform limit; keep only required model/runtim
 For rollback, retain the previous known-good deployment and its source/model versions. Promote that deployment through Vercel's normal rollback mechanism, then repeat health and example-inference checks.
 
 Official references: [FastAPI on Vercel](https://vercel.com/docs/frameworks/backend/fastapi), [Python runtime](https://vercel.com/docs/functions/runtimes/python), [function configuration](https://vercel.com/docs/project-configuration/vercel-json). Platform behavior and plan limits can change; check the deployment's actual build output and settings.
+
+## SNLI inference verification
+
+Confirm `/v1/config` reports `fine_tuned_available: true`. Run an own-text comparison at `/#model-lab`, inspect `/v1/compare` evidence and match the ONNX and adapter checksums against the committed catalog. Run both related and unrelated passages, then select the fine-tuned recommendation mode and verify actual cosine scores. The [training record](FINE_TUNING.md) reports exact deployed INT8 metrics and their uncertainty.

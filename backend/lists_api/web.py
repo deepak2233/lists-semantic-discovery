@@ -29,6 +29,7 @@ def web_settings() -> Settings:
     if not os.getenv("VERCEL"):
         origins.extend(["http://127.0.0.1:8000", "http://localhost:8000"])
     manifest = ROOT / "models/minilm/manifest.json"
+    adapted = ROOT / "models/snli-lora-v1/manifest.json"
     return replace(
         settings,
         environment=os.getenv("LISTS_ENV", "demo"),
@@ -36,6 +37,8 @@ def web_settings() -> Settings:
         web_origins=tuple(dict.fromkeys(origins)),
         semantic_model_path=settings.semantic_model_path
         or (str(manifest.parent) if manifest.is_file() else ""),
+        fine_tuned_model_path=settings.fine_tuned_model_path
+        or (str(adapted.parent) if adapted.is_file() else ""),
     )
 
 

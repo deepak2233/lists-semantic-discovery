@@ -55,7 +55,7 @@ class Ranker:
             from .semantic import MiniLMEncoder
 
             self.model = MiniLMEncoder(model_path)
-        self.name = "bm25-minilm-rrf-mmr" if self.model else "bm25-rrf-mmr"
+        self.name = f"bm25-{self.model.model_id}-rrf-mmr" if self.model else "bm25-rrf-mmr"
 
     def rank(
         self,

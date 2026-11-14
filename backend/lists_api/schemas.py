@@ -15,7 +15,7 @@ class RecommendRequest(BaseModel):
     language: Literal["en"] = "en"
     limit: int = Field(default=10, ge=1, le=10, strict=True)
     exclude_same_host: bool = Field(default=True, strict=True)
-    ranking: Literal["auto", "lexical", "semantic"] = "auto"
+    ranking: Literal["auto", "lexical", "semantic", "fine_tuned"] = "auto"
 
     @field_validator("page_url")
     @classmethod
@@ -65,3 +65,14 @@ class RecommendResponse(BaseModel):
     elapsed_ms: float
     timings_ms: dict[str, float] = Field(default_factory=dict)
     pipeline_version: str = "lists-v2"
+
+
+class CompareRequest(BaseModel):
+    model_config = ConfigDict(extra="forbid", str_strip_whitespace=True)
+    text_a: str = Field(min_length=3, max_length=1800)
+    text_b: str = Field(min_length=3, max_length=1800)
+
+    @field_validator("text_a", "text_b", mode="before")
+    @classmethod
+    def clean_text(cls, value: str) -> str:
+        return RecommendRequest.clean_text(value)

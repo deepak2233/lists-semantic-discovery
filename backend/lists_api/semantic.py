@@ -2,6 +2,7 @@
 
 import hashlib
 import json
+from importlib.resources import files
 from pathlib import Path
 
 MODEL_REPO = "sentence-transformers/all-MiniLM-L6-v2"
@@ -22,8 +23,21 @@ class MiniLMEncoder:
             actual = hashlib.sha256((root / filename).read_bytes()).hexdigest()
             if actual != manifest["sha256"][filename]:
                 raise ValueError("Model artifact checksum mismatch")
-        if manifest["sha256"]["model.onnx"] != MODEL_SHA256:
+        model_id = manifest.get("model_id", "minilm")
+        adapter_sha256 = None
+        expected = MODEL_SHA256
+        if model_id != "minilm":
+            catalog = json.loads(files("lists_api").joinpath("data/model_catalog.json").read_text())
+            entry = catalog.get(model_id)
+            if not entry or manifest["sha256"] != entry["sha256"]:
+                raise ValueError("Unreviewed adapted model")
+            expected = entry["sha256"]["model.onnx"]
+            adapter_sha256 = entry.get("adapter_sha256")
+        if manifest["sha256"]["model.onnx"] != expected:
             raise ValueError("Unreviewed model weights")
+        self.adapter_sha256 = adapter_sha256
+        self.model_id = model_id
+        self.model_sha256 = expected
         self.tokenizer = Tokenizer.from_file(str(root / "tokenizer.json"))
         self.tokenizer.enable_truncation(max_length=256)
         self.tokenizer.enable_padding(pad_id=0, pad_token="[PAD]")

@@ -71,6 +71,7 @@ def main():
                 "/",
                 "/assets/app.js",
                 "/assets/playground.js",
+                "/assets/comparison.js",
                 "/assets/nlp.js",
                 "/assets/safety.js",
                 "/assets/styles.css",
@@ -79,20 +80,46 @@ def main():
                 client.get(path).raise_for_status()
             payload = json.loads((ROOT / "examples/request.json").read_text())
             counts = {}
-            for mode in ("semantic", "lexical"):
+            for mode in ("semantic", "lexical", "fine_tuned"):
                 response = client.post(
                     "/v1/recommend", json=payload | {"ranking": mode}, headers={"Origin": base}
                 )
                 response.raise_for_status()
                 data = response.json()
                 assert len(data["recommendations"]) == 10
-                assert ("minilm" in data["ranker"]) == (mode == "semantic")
+                assert ("minilm" in data["ranker"]) == (mode != "lexical")
                 assert all(
-                    (r["semantic_similarity"] is not None) == (mode == "semantic")
+                    (r["semantic_similarity"] is not None) == (mode != "lexical")
                     for r in data["recommendations"]
                 )
                 counts[mode] = len(data["recommendations"])
-            print(json.dumps({"web_runtime": "passed", "results": counts}))
+            config = client.get("/v1/config").json()
+            assert config["fine_tuned_available"] is True
+            scores = []
+            for text in (
+                "A developer sets timeouts and retry limits for a service.",
+                "A baker kneads dough and puts bread in an oven.",
+            ):
+                comparison = client.post(
+                    "/v1/compare",
+                    headers={"Origin": base},
+                    json={
+                        "text_a": "An engineer adds request deadlines and retries to a Python API.",
+                        "text_b": text,
+                    },
+                )
+                comparison.raise_for_status()
+                evidence = comparison.json()
+                assert "snli-lora-v1" in evidence["fine_tuned_model"]
+                assert len(evidence["fine_tuned_checkpoint_sha256"]) == 64
+                assert -1 <= evidence["fine_tuned_cosine"] <= 1
+                scores.append(evidence["fine_tuned_cosine"])
+            assert scores[0] > scores[1] + 0.2
+            print(
+                json.dumps(
+                    {"web_runtime": "passed", "results": counts, "actual_comparison_scores": scores}
+                )
+            )
     finally:
         server.terminate()
         try:

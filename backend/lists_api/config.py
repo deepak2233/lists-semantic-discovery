@@ -21,6 +21,7 @@ class Settings:
     web_origins: tuple[str, ...] = ()
     allowed_hosts: tuple[str, ...] = ("127.0.0.1", "localhost", "testserver")
     semantic_model_path: str = ""
+    fine_tuned_model_path: str = ""
     provider_timeout_seconds: float = 3.0
     cache_ttl_seconds: float = 0.0
     requests_per_minute: int = 30
@@ -44,6 +45,7 @@ class Settings:
             web_origins=csv("LISTS_WEB_ORIGINS"),
             allowed_hosts=csv("LISTS_ALLOWED_HOSTS", "127.0.0.1,localhost,testserver"),
             semantic_model_path=os.getenv("LISTS_MODEL_PATH", ""),
+            fine_tuned_model_path=os.getenv("LISTS_FINE_TUNED_MODEL_PATH", ""),
             provider_timeout_seconds=float(os.getenv("PROVIDER_TIMEOUT_SECONDS", "3")),
             cache_ttl_seconds=float(os.getenv("CACHE_TTL_SECONDS", "0")),
             requests_per_minute=int(os.getenv("REQUESTS_PER_MINUTE", "30")),
@@ -97,6 +99,8 @@ class Settings:
                 )
         if self.semantic_model_path and not Path(self.semantic_model_path).is_dir():
             raise ValueError("LISTS_MODEL_PATH must point to a reviewed local model directory")
+        if self.fine_tuned_model_path and not Path(self.fine_tuned_model_path).is_dir():
+            raise ValueError("LISTS_FINE_TUNED_MODEL_PATH must point to a reviewed model directory")
         if not 0.1 <= self.provider_timeout_seconds <= 10:
             raise ValueError("Provider timeout must be between 0.1 and 10 seconds")
         if not 0 <= self.cache_ttl_seconds <= 300:

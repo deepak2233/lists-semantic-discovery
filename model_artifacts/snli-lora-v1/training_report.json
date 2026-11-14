@@ -1,0 +1,160 @@
+{
+  "experiment": "lists-snli-lora-v1",
+  "base_repository": "sentence-transformers/all-MiniLM-L6-v2",
+  "base_revision": "1110a243fdf4706b3f48f1d95db1a4f5529b4d41",
+  "seed": 2233,
+  "device": "CPU",
+  "objective": "InfoNCE / multiple-negatives cross-entropy with in-batch and labelled contradiction negatives",
+  "lora": {
+    "rank": 8,
+    "alpha": 16,
+    "dropout": 0.05,
+    "targets": [
+      "query",
+      "value"
+    ]
+  },
+  "trainable_parameters": 73728,
+  "frozen_parameters_unchanged": true,
+  "optimizer": "AdamW",
+  "learning_rate": 0.0002,
+  "weight_decay": 0.01,
+  "warmup_updates": 32,
+  "batch_size": 16,
+  "train_max_tokens": 64,
+  "epochs": 1,
+  "optimizer_updates": 512,
+  "processed_triplets": 8192,
+  "distinct_training_anchors_seen": 8192,
+  "selected_checkpoint_update": 256,
+  "elapsed_seconds": 452.12,
+  "loss_first_32": 0.28439863747917116,
+  "loss_last_32": 0.28203248779755086,
+  "baseline_validation": {
+    "queries": 512,
+    "candidates": 1021,
+    "mrr_at_10": 0.8248442150297619,
+    "recall_at_10": 0.96484375,
+    "top_1_accuracy": 0.7421875,
+    "positive_over_contradiction": 0.939453125
+  },
+  "validation_history": [
+    {
+      "step": 128,
+      "queries": 512,
+      "candidates": 1021,
+      "mrr_at_10": 0.8238940042162698,
+      "recall_at_10": 0.96875,
+      "top_1_accuracy": 0.740234375,
+      "positive_over_contradiction": 0.939453125
+    },
+    {
+      "step": 256,
+      "queries": 512,
+      "candidates": 1021,
+      "mrr_at_10": 0.8281071738591269,
+      "recall_at_10": 0.96875,
+      "top_1_accuracy": 0.75,
+      "positive_over_contradiction": 0.94140625
+    },
+    {
+      "step": 384,
+      "queries": 512,
+      "candidates": 1021,
+      "mrr_at_10": 0.8251131572420636,
+      "recall_at_10": 0.962890625,
+      "top_1_accuracy": 0.74609375,
+      "positive_over_contradiction": 0.94140625
+    },
+    {
+      "step": 512,
+      "queries": 512,
+      "candidates": 1021,
+      "mrr_at_10": 0.8257393973214285,
+      "recall_at_10": 0.966796875,
+      "top_1_accuracy": 0.74609375,
+      "positive_over_contradiction": 0.94140625
+    }
+  ],
+  "baseline_test": {
+    "queries": 512,
+    "candidates": 1019,
+    "mrr_at_10": 0.7911295572916667,
+    "recall_at_10": 0.95703125,
+    "top_1_accuracy": 0.689453125,
+    "positive_over_contradiction": 0.9453125
+  },
+  "fine_tuned_test": {
+    "queries": 512,
+    "candidates": 1019,
+    "mrr_at_10": 0.7986808655753967,
+    "recall_at_10": 0.958984375,
+    "top_1_accuracy": 0.705078125,
+    "positive_over_contradiction": 0.953125
+  },
+  "test_mrr_at_10_difference": 0.007551308283730159,
+  "paired_bootstrap_95_percent_interval": [
+    -0.0033258347284226184,
+    0.019494938926091263
+  ],
+  "dataset_manifest": {
+    "dataset": "stanfordnlp/snli",
+    "revision": "cdb5c3d5eed6ead6e5a341c8e56e669bb666725b",
+    "license": "CC-BY-SA-4.0",
+    "source": "https://nlp.stanford.edu/projects/snli/",
+    "seed": 2233,
+    "files": {
+      "train": {
+        "records": 8192,
+        "sha256": "03d217467305729412cb4b7fda06b2b4ac8b3f898164b88eedcc1b13bb2fc8ac"
+      },
+      "validation": {
+        "records": 512,
+        "sha256": "56eebd0eef273b2e9631233f0e02369f1d983659f4c96594e9acefce9c1648d7"
+      },
+      "test": {
+        "records": 512,
+        "sha256": "08bc9220b416c07b9341baef3bd9d44c9bd78d88c301a547a4e8d8c31a227bd0"
+      }
+    },
+    "downloads": {
+      "train": {
+        "url": "https://huggingface.co/datasets/stanfordnlp/snli/resolve/cdb5c3d5eed6ead6e5a341c8e56e669bb666725b/plain_text/train-00000-of-00001.parquet",
+        "sha256": "ef9a7b25d97390a62aeda7abe26aec8640600f50b818eaeb9107097d60ac6620",
+        "bytes": 19614612
+      },
+      "validation": {
+        "url": "https://huggingface.co/datasets/stanfordnlp/snli/resolve/cdb5c3d5eed6ead6e5a341c8e56e669bb666725b/plain_text/validation-00000-of-00001.parquet",
+        "sha256": "00f5ed8deaed007fef3022f0215b287efbab815b1bb31ac3f3ff4f4129d41ffe",
+        "bytes": 413157
+      },
+      "test": {
+        "url": "https://huggingface.co/datasets/stanfordnlp/snli/resolve/cdb5c3d5eed6ead6e5a341c8e56e669bb666725b/plain_text/test-00000-of-00001.parquet",
+        "sha256": "4696deda851c4d2385f26b58f2e13f9ed9f08ea7b42a3f4c2b97a9d08448878c",
+        "bytes": 411531
+      }
+    },
+    "normalized_cross_split_text_overlap": 0,
+    "limitations": [
+      "The pretrained baseline may already have encountered SNLI through AllNLI.",
+      "These are sentence-entailment retrieval labels, not webpage usefulness judgments.",
+      "Only a bounded subset is used; the full SNLI corpus is not trained in this run."
+    ],
+    "base_source_sha256": "9d02c038e58728b6aebf9af1a25aa078c4c36579aec2065496850d9daf66aaf8"
+  },
+  "adapter_sha256": "148ee3b52db7e20eec65bc28d02f7c864cb6c5b4094d864840f6607ec9cac7b8",
+  "training_source_sha256": "9d0c383d50e738520e872e0680b4107010c8ea52fa90398fb19408261425fe26",
+  "software": {
+    "torch": "2.8.0+cpu",
+    "transformers": "4.57.6",
+    "peft": "0.18.0",
+    "numpy": "2.3.4",
+    "pyarrow": "21.0.0",
+    "safetensors": "0.6.2"
+  },
+  "limitations": [
+    "Baseline pretraining may include SNLI/AllNLI; this does not establish unseen-domain quality.",
+    "The task is sentence entailment retrieval, not live-web usefulness or generation.",
+    "The model does not create or discover URLs outside the candidate provider."
+  ]
+}

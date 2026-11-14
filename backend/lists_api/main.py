@@ -1,5 +1,6 @@
 import asyncio
 import logging
+import math
 import re
 import time
 import uuid
@@ -19,7 +20,7 @@ from .config import Settings
 from .controls import RateLimiter, ResultCache
 from .ranking import Ranker, make_query
 from .retrieval import BraveProvider, DemoProvider, ProviderUnavailable, SearchProvider
-from .schemas import RecommendRequest, RecommendResponse
+from .schemas import CompareRequest, RecommendRequest, RecommendResponse
 
 logger = logging.getLogger("lists")
 
@@ -61,6 +62,7 @@ def create_app(
     settings: Settings | None = None,
     provider: SearchProvider | None = None,
     ranker: Ranker | None = None,
+    fine_tuned_ranker: Ranker | None = None,
 ) -> FastAPI:
     settings = settings or Settings.from_env()
     settings.validate()
@@ -87,6 +89,11 @@ def create_app(
             app.state.ranker = ranker or await run_in_threadpool(
                 Ranker, settings.semantic_model_path
             )
+            app.state.fine_tuned_ranker = fine_tuned_ranker
+            if fine_tuned_ranker is None and settings.fine_tuned_model_path:
+                app.state.fine_tuned_ranker = await run_in_threadpool(
+                    Ranker, settings.fine_tuned_model_path
+                )
             app.state.cache = ResultCache(settings.cache_ttl_seconds)
             app.state.limiter = RateLimiter(settings.requests_per_minute)
             app.state.slots = asyncio.Semaphore(settings.max_inflight)
@@ -169,6 +176,9 @@ def create_app(
             "mode": "demo" if settings.provider == "demo" else "live",
             "ranker": app.state.ranker.name,
             "semantic_available": bool(app.state.ranker.model),
+            "fine_tuned_available": bool(
+                app.state.fine_tuned_ranker and app.state.fine_tuned_ranker.model
+            ),
             "authentication_required": settings.auth_mode != "none",
             "corpus_documents": len(app.state.provider.documents)
             if isinstance(app.state.provider, DemoProvider)
@@ -191,10 +201,15 @@ def create_app(
         payload: RecommendRequest, request: Request, subject: str = Depends(authenticator)
     ):
         started = time.perf_counter()
+        selected_ranker = app.state.ranker
+        if payload.ranking == "fine_tuned":
+            if not app.state.fine_tuned_ranker or not app.state.fine_tuned_ranker.model:
+                raise HTTPException(409, "The fine-tuned model is not configured on this server.")
+            selected_ranker = app.state.fine_tuned_ranker
         if payload.ranking == "semantic" and not app.state.ranker.model:
             raise HTTPException(409, "Semantic ranking is not configured on this server.")
-        semantic = payload.ranking != "lexical" and bool(app.state.ranker.model)
-        ranker_name = "bm25-minilm-rrf-mmr" if semantic else "bm25-rrf-mmr"
+        semantic = payload.ranking != "lexical" and bool(selected_ranker.model)
+        ranker_name = selected_ranker.name if semantic else "bm25-rrf-mmr"
         if not app.state.limiter.allow(subject):
             raise HTTPException(
                 429, "Request limit reached. Try again in a minute.", headers={"Retry-After": "60"}
@@ -217,7 +232,7 @@ def create_app(
                 timings["retrieval"] = round((time.perf_counter() - mark) * 1000, 2)
                 mark = time.perf_counter()
                 results, count = await run_in_threadpool(
-                    app.state.ranker.rank,
+                    selected_ranker.rank,
                     payload,
                     candidates,
                     use_provider_rank=settings.provider != "demo",
@@ -237,6 +252,10 @@ def create_app(
             warnings = []
             if settings.provider == "demo":
                 warnings.append("Demo corpus only. These are not live web search results.")
+            if payload.ranking == "fine_tuned":
+                warnings.append(
+                    "SNLI sentence-relevance adaptation; web usefulness is not validated."
+                )
             if payload.ranking == "lexical":
                 warnings.append("Lexical baseline selected for this request.")
             elif not semantic:
@@ -255,6 +274,52 @@ def create_app(
             elapsed_ms=round((time.perf_counter() - started) * 1000, 2),
             timings_ms=timings,
         )
+
+    @app.post("/v1/compare")
+    async def compare(
+        payload: CompareRequest, request: Request, subject: str = Depends(authenticator)
+    ):
+        started = time.perf_counter()
+        adapted = app.state.fine_tuned_ranker
+        baseline = app.state.ranker
+        if not adapted or not adapted.model or not baseline.model:
+            raise HTTPException(409, "Both baseline and fine-tuned models must be configured.")
+        if not app.state.limiter.allow(subject):
+            raise HTTPException(429, "Request limit reached.", headers={"Retry-After": "60"})
+        try:
+            await asyncio.wait_for(app.state.slots.acquire(), timeout=0.05)
+        except TimeoutError:
+            raise HTTPException(503, "Server is busy.", headers={"Retry-After": "1"}) from None
+        try:
+
+            def similarities():
+                values = []
+                for model in (baseline.model, adapted.model):
+                    vectors = model.encode([payload.text_a, payload.text_b])
+                    score = float(vectors[0] @ vectors[1])
+                    if not math.isfinite(score):
+                        raise ValueError("Invalid similarity")
+                    values.append(max(-1.0, min(1.0, score)))
+                return values
+
+            original, tuned = await run_in_threadpool(similarities)
+        except ValueError:
+            raise HTTPException(503, "Model inference is temporarily unavailable.") from None
+        finally:
+            app.state.slots.release()
+        return {
+            "request_id": request.state.request_id,
+            "baseline_model": baseline.name,
+            "fine_tuned_model": adapted.name,
+            "fine_tuned_checkpoint_sha256": getattr(adapted.model, "model_sha256", None),
+            "fine_tuned_adapter_sha256": getattr(adapted.model, "adapter_sha256", None),
+            "baseline_cosine": round(original, 6),
+            "fine_tuned_cosine": round(tuned, 6),
+            "difference": round(tuned - original, 6),
+            "elapsed_ms": round((time.perf_counter() - started) * 1000, 2),
+            "dataset": "stanfordnlp/snli",
+            "score_note": "Cosine similarity, not a probability or a quality judgment.",
+        }
 
     return app
 

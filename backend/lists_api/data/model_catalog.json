@@ -1,0 +1,34 @@
+{
+  "minilm-q8": {
+    "model_id": "minilm-q8",
+    "repository": "sentence-transformers/all-MiniLM-L6-v2",
+    "revision": "1110a243fdf4706b3f48f1d95db1a4f5529b4d41",
+    "sha256": {
+      "model.onnx": "48b18f3e2766a34cb7ae7f06ecf2edfd252197d9ce99baac61db53b39fdc16c3",
+      "tokenizer.json": "be50c3628f2bf5bb5e3a7f17b1f74611b2561a3a27eeab05e5aa30f411572037"
+    },
+    "dimensions": 384,
+    "max_tokens": 256,
+    "pooling": "attention-mask mean + L2 normalization",
+    "quantization": "dynamic QUInt8 MatMul and Gather; per-tensor; full range",
+    "onnx_bytes": 22843905
+  },
+  "minilm-snli-lora-v1": {
+    "model_id": "minilm-snli-lora-v1",
+    "repository": "sentence-transformers/all-MiniLM-L6-v2",
+    "revision": "1110a243fdf4706b3f48f1d95db1a4f5529b4d41",
+    "sha256": {
+      "model.onnx": "5c14201b92a55394830498ad48b0d6f3b085b89277cd0c18edbc0ff438b4ac41",
+      "tokenizer.json": "be50c3628f2bf5bb5e3a7f17b1f74611b2561a3a27eeab05e5aa30f411572037"
+    },
+    "dimensions": 384,
+    "max_tokens": 256,
+    "pooling": "attention-mask mean + L2 normalization",
+    "quantization": "dynamic QUInt8 MatMul and Gather; per-tensor; full range",
+    "onnx_bytes": 22843905,
+    "adapter_sha256": "148ee3b52db7e20eec65bc28d02f7c864cb6c5b4094d864840f6607ec9cac7b8",
+    "training_dataset": "stanfordnlp/snli",
+    "training_examples": 4096,
+    "experiment_training_examples": 8192
+  }
+}

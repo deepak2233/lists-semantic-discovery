@@ -1,0 +1,36 @@
+{
+  "baseline": {
+    "model_id": "minilm-q8",
+    "sha256": "48b18f3e2766a34cb7ae7f06ecf2edfd252197d9ce99baac61db53b39fdc16c3",
+    "queries": 512,
+    "candidates": 1019,
+    "mrr_at_10": 0.7877154637896826,
+    "recall_at_10": 0.9453125,
+    "top_1_accuracy": 0.69140625,
+    "positive_over_contradiction": 0.94140625
+  },
+  "fine_tuned": {
+    "model_id": "minilm-snli-lora-v1",
+    "sha256": "5c14201b92a55394830498ad48b0d6f3b085b89277cd0c18edbc0ff438b4ac41",
+    "queries": 512,
+    "candidates": 1019,
+    "mrr_at_10": 0.7909202938988095,
+    "recall_at_10": 0.955078125,
+    "top_1_accuracy": 0.697265625,
+    "positive_over_contradiction": 0.94921875
+  },
+  "evaluation": "SNLI held-out retrieval using the exact deployed INT8 artifacts",
+  "checkpoint_selection": "Fixed validation-selected adapter; no selection on this evaluation",
+  "test_sha256": "08bc9220b416c07b9341baef3bd9d44c9bd78d88c301a547a4e8d8c31a227bd0",
+  "inference_max_tokens": 256,
+  "test_mrr_at_10_difference": 0.003204830109126984,
+  "paired_bootstrap_95_percent_interval": [
+    -0.00934572250124008,
+    0.016064646887400794
+  ],
+  "limitations": [
+    "Baseline pretraining may include SNLI/AllNLI; this does not establish unseen-domain quality.",
+    "The task is sentence entailment retrieval, not live-web usefulness or generation.",
+    "The model does not create or discover URLs outside the candidate provider."
+  ]
+}

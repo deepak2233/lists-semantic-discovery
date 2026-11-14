@@ -1,0 +1,21 @@
+LISTS SNLI LoRA adapter and dataset-derived evaluation artifacts
+Copyright (c) 2026 Deepak Yadav
+
+Licensed under Creative Commons Attribution-ShareAlike 4.0 International:
+https://creativecommons.org/licenses/by-sa/4.0/
+Legal code: https://creativecommons.org/licenses/by-sa/4.0/legalcode.en
+
+SNLI dataset attribution:
+Samuel R. Bowman, Gabor Angeli, Christopher Potts and Christopher D. Manning.
+A large annotated corpus for learning natural language inference. EMNLP, 2015.
+https://nlp.stanford.edu/projects/snli/
+https://aclanthology.org/D15-1075/
+Original dataset license: CC BY-SA 4.0.
+Modifications: selected entailment/contradiction triplets, trained MiniLM query/value
+LoRA adapter, computed retrieval evaluation summaries and per-query ranks.
+
+The upstream sentence-transformers/all-MiniLM-L6-v2 base encoder is separately
+licensed Apache-2.0. This adapter requires that base; the base weights are not
+redistributed in this directory. Preserve upstream notices when reconstructing it.
+
+This directory's terms do not replace the root MIT license for application source.

@@ -21,7 +21,8 @@ Use the Chrome extension in your reading workflow, or use the inference playgrou
 | --- | --- |
 | Contextual recommendations | Up to ten related pages from a reviewed public excerpt |
 | Real semantic inference | Pinned MiniLM ONNX embeddings on CPU, fused with BM25 and diversified |
-| Cross-check ranking | Switch between automatic, lexical baseline and semantic hybrid modes |
+| Cross-check ranking | Switch between lexical, pretrained and experimental SNLI fine-tuned modes |
+| Test your own text | Compare arbitrary English passages using both encoders, with actual model checksums |
 | Inspect the evidence | View actual BM25/cosine scores, relative fused rank, stage timings and API JSON |
 | Review before sharing | Browser extraction stays local until the user chooses to send |
 | Handle failures clearly | Explicit validation, auth, quota, empty-result, timeout and dependency-error states |
@@ -36,6 +37,14 @@ The webpage provides authored sample contexts, editable input, ranking controls,
 **Candidate source and ranking model are separate settings.** The default hosted demonstration performs real inference over 44 authored technical-resource descriptions. It is labeled **Demo corpus**. Live web discovery requires a configured search-provider subscription and protected API access.
 
 The interface always reports the active mode. Semantic mode is rejected with `409` if the server has no model; it never silently becomes lexical mode. Result scores are relative to that request, not relevance probabilities.
+
+## Fine-tuned model
+
+A real MiniLM LoRA experiment processed **8,192 Stanford SNLI triplets**, using 73,728 trainable parameters and 512 CPU optimizer updates. The served checkpoint was selected at update 256, after seeing **4,096 triplets**. Data preparation, the trained checkpoint, pinned environments and evaluation reports are included. SNLI is public data under **CC BY-SA 4.0**; dataset attribution and the contrastive training method are documented in [FINE_TUNING.md](docs/FINE_TUNING.md).
+
+The deployed INT8 model scored **0.7909 MRR@10**, versus **0.7877** for the pretrained control on 512 held-out SNLI retrieval queries. The confidence interval includes zero, so this is an experimental option, not a demonstrated general-web improvement. The automatic default remains pretrained MiniLM.
+
+Open the [trained-model comparison](https://lists-semantic-discovery.vercel.app/#model-lab) to use your own passages. It runs actual inference independently of the fixed webpage collection. For recommendations, choose **Fine-tuned · SNLI LoRA**. Fine-tuning does not add URLs to the candidate provider.
 
 ## Quick start
 
@@ -53,7 +62,9 @@ uv run --no-sync python scripts/dev_web.py --port 8000
 
 Open **http://127.0.0.1:8000**. The model setup explicitly downloads approximately 90 MB of pinned ONNX weights and verifies the publisher checksum. The service never downloads weights during a recommendation request.
 
-For a lightweight lexical-only run, omit `--extra semantic` and the model-download command. Keep `models/minilm` absent or explicitly configure a reviewed model path when you want semantic inference.
+To enable the committed trained adapter locally, run `uv run --no-sync python scripts/build_vercel.py` before starting the web app. This reconstructs both reviewed INT8 encoders in a separate locked export environment; it does not retrain.
+
+For a lightweight lexical-only run, omit the model-download command. Keep `models/minilm` absent or explicitly configure a reviewed model path when you want semantic inference.
 
 ### Chrome extension
 
@@ -101,7 +112,7 @@ See the [full HLD](docs/HLD.md), [research notes](docs/RESEARCH.md) and [decisio
 
 ## Deploy to Vercel
 
-The root `app.py` is the FastAPI entrypoint. `vercel.json` configures a 30-second request limit and response security headers. `scripts/build_vercel.py` builds shared frontend assets, installs only the locked runtime graph into an isolated deployment directory, and prepares the pinned model before publication.
+The root `app.py` is the FastAPI entrypoint. `vercel.json` configures a 30-second request limit and response security headers. `scripts/build_vercel.py` prepares shared assets, reconstructs both reviewed INT8 encoders in a separate locked export environment and verifies their checksums. The deployed function uses only the declared runtime graph; training tools are excluded.
 
 Import this repository into your Vercel account with the **FastAPI** framework and repository root as the project root. The default web application is a fixed-corpus demonstration, so it cannot spend a search-provider quota. Set `LISTS_BUILD_SEMANTIC=0` only if you intentionally want a lexical-only deployment.
 
@@ -144,6 +155,8 @@ The suite covers backend contracts and browser logic, including malformed payloa
 | `deploy/` | Frozen runtime dependency export for Vercel builds |
 | `evaluation/` | Authored contexts, relevance judgments and recorded results |
 | `scripts/` | Development, build, evaluation, HTTP verification and report generation |
+| `training/` | Pinned public-data preparation, actual LoRA training and deterministic export |
+| `model_artifacts/` | Trained adapter, model cards, licenses and measured evaluation evidence |
 
 ## Production boundary
 

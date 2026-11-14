@@ -11,7 +11,7 @@
 <a href="#workspace" class="skip-link">Skip to inference workspace</a>
 <header class="site-header shell">
   <a class="wordmark" href="/" aria-label="LISTS home"><span class="logo-icon" aria-hidden="true"><i></i><i></i><i></i></span>LISTS<span class="orange">.</span></a>
-  <nav aria-label="Main navigation"><a class="nav-active" href="#workspace">Playground</a><a href="#how-it-works">How it works</a><a href="https://github.com/deepak2233/lists-semantic-discovery" target="_blank" rel="noopener noreferrer">Source code <span aria-hidden="true"><svg class="external-arrow" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 18 18 6M6 6h12v12"/></svg></span></a></nav>
+  <nav aria-label="Main navigation"><a class="nav-active" href="#workspace">Playground</a><a href="#model-lab">Trained model</a><a href="#how-it-works">How it works</a><a href="https://github.com/deepak2233/lists-semantic-discovery" target="_blank" rel="noopener noreferrer">Source code <span aria-hidden="true"><svg class="external-arrow" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 18 18 6M6 6h12v12"/></svg></span></a></nav>
   <span class="header-status" id="connection"><span class="status-dot"></span><span id="connection-text">Connecting to inference</span></span>
 </header>
 <main>
@@ -46,7 +46,7 @@
           <label for="page-url">Page address <span class="field-note">Optional</span></label>
           <input id="page-url" name="url" type="url" maxlength="2048" autocomplete="off" placeholder="https://example.com/article">
           <p class="field-hint">Used to exclude the current page. The server never fetches it.</p>
-          <div class="options-row"><div><label for="ranking-mode">Ranking mode</label><select id="ranking-mode" name="ranking"><option value="auto">Balanced · automatic</option><option value="lexical">Lexical baseline · BM25</option><option value="semantic" id="semantic-option">Semantic hybrid · MiniLM</option></select></div><div class="limit-field"><label for="result-limit">Results</label><select id="result-limit" name="limit"><option value="5">5</option><option value="10" selected>10</option></select></div></div>
+          <div class="options-row"><div><label for="ranking-mode">Ranking mode</label><select id="ranking-mode" name="ranking"><option value="auto">Balanced · automatic</option><option value="lexical">Lexical baseline · BM25</option><option value="semantic" id="semantic-option">Pretrained · MiniLM</option><option value="fine_tuned" id="fine-tuned-option" disabled>Fine-tuned · SNLI LoRA</option></select></div><div class="limit-field"><label for="result-limit">Results</label><select id="result-limit" name="limit"><option value="5">5</option><option value="10" selected>10</option></select></div></div>
           <label class="checkbox-label"><input id="other-sites" type="checkbox" checked><span>Explore pages from other websites</span></label>
           <details class="session-options" id="session-options" hidden><summary>Protected API session</summary><label for="access-token">Short-lived access token</label><input id="access-token" type="password" autocomplete="off" placeholder="Your user access token"><p class="field-hint">Used only for this page session. Never paste a search-provider key.</p></details>
           <button type="submit" id="run" class="run-button"><span id="run-text">Discover related pages</span><span class="run-arrow" aria-hidden="true"><svg class="external-arrow" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 18 18 6M6 6h12v12"/></svg></span></button>
@@ -73,6 +73,19 @@
       </section>
     </div>
     <p id="dataset-disclosure" class="dataset-disclosure">This deployment reports its candidate source and active ranking model. Results are never silently substituted.</p>
+  </section>
+
+  <section class="model-lab shell" id="model-lab" aria-labelledby="model-lab-heading">
+    <div class="workspace-heading"><div><p class="eyebrow">YOUR TEXT. TWO MODELS.</p><h2 id="model-lab-heading">Try the fine-tuned model.</h2></div><span id="comparison-availability" class="mode-pill">Checking checkpoint</span></div>
+    <p class="comparison-intro">Compare two English passages using pretrained MiniLM and our SNLI LoRA adaptation. This works with your own text and does not use the 44-page candidate collection.</p>
+    <div class="examples" aria-label="Text comparison examples"><button type="button" class="example" id="compare-related">Related passages</button><button type="button" class="example" id="compare-different">Different passages</button></div>
+    <form id="comparison-form">
+      <div class="comparison-inputs"><div><label for="compare-a">First passage</label><textarea id="compare-a" required minlength="3" maxlength="1800" rows="4"></textarea></div><div><label for="compare-b">Second passage</label><textarea id="compare-b" required minlength="3" maxlength="1800" rows="4"></textarea></div></div>
+      <div class="comparison-actions"><button type="submit" id="compare-run" class="run-button">Compare with the trained model</button><button type="button" id="compare-cancel" class="text-button" hidden>Cancel comparison</button><span class="field-hint">Review both passages before sending. Automatic redaction is incomplete.</span></div>
+    </form>
+    <p id="comparison-status" class="inference-status" role="status" aria-live="polite">Choose an example or paste two public passages.</p>
+    <div id="comparison-results" class="comparison-results" hidden><div><span class="eyebrow">PRETRAINED MINILM</span><strong id="baseline-cosine"></strong><span>cosine similarity</span></div><div class="adapted-score"><span class="eyebrow">FINE-TUNED · SNLI LORA</span><strong id="adapted-cosine"></strong><span>cosine similarity</span></div><p>These are similarity scores, not probabilities. A larger score does not by itself establish a better model. See the held-out evaluation in the training report.</p></div>
+    <details class="comparison-evidence"><summary>Inspect this inference and its training source</summary><p>Dataset: <a href="https://huggingface.co/datasets/stanfordnlp/snli" target="_blank" rel="noopener noreferrer">Stanford SNLI · CC BY-SA 4.0</a>. <a href="https://github.com/deepak2233/lists-semantic-discovery/blob/main/docs/FINE_TUNING.md" target="_blank" rel="noopener noreferrer">Training method and measured results</a>.</p><pre id="comparison-json">Run a comparison to see its actual API response.</pre></details>
   </section>
 
   <section class="how-section shell" id="how-it-works" aria-labelledby="how-heading"><div><p class="eyebrow">THOUGHTFUL BY DESIGN</p><h2 id="how-heading">Less noise.<br>More “that’s useful.”</h2></div><div class="principles"><article><span>01 / CONTEXT FIRST</span><h3>Follow the idea.</h3><p>Your title and excerpt describe what matters. Local extraction builds a focused query without a browsing profile.</p></article><article><span>02 / RELEVANCE YOU CAN SEE</span><h3>Know why it’s here.</h3><p>Shared topics and optional semantic similarity make every recommendation easier to inspect.</p></article><article><span>03 / ROOM TO EXPLORE</span><h3>Skip the repetition.</h3><p>Duplicate removal and a two-result host cap make space for different sources and perspectives.</p></article></div></section>

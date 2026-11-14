@@ -150,7 +150,7 @@ export function initPlayground({document, fetch, clipboard, timeoutMs = 20000}) 
     $("candidate-count").textContent = String(data.candidate_count);
     $("source-count").textContent = String(hosts.size);
     $("elapsed").textContent = Math.round(data.elapsed_ms).toLocaleString();
-    $("actual-ranker").textContent = data.ranker.includes("minilm") ? "Semantic hybrid" : "Lexical baseline";
+    $("actual-ranker").textContent = data.ranker.includes("snli-lora") ? "Fine-tuned · SNLI" : data.ranker.includes("minilm") ? "Pretrained · MiniLM" : "Lexical baseline";
     for (const id of ["summary-bar", "result-badge"]) show(id, true);
     show("empty-state", false); show("result-note", displayed > 0); show("no-results", displayed === 0);
     $("warnings").replaceChildren();
@@ -180,6 +180,9 @@ export function initPlayground({document, fetch, clipboard, timeoutMs = 20000}) 
         exclude_same_host: $("other-sites").checked, language: "en"};
       if (payload.ranking === "semantic" && configuration?.semantic_available === false) {
         throw new Error("This server has no semantic model. Choose the lexical baseline or automatic mode.");
+      }
+      if (payload.ranking === "fine_tuned" && configuration?.fine_tuned_available === false) {
+        throw new Error("The trained checkpoint is unavailable on this server. Choose the pretrained model.");
       }
       lastRequest = payload; lastResponse = null;
       $("request-json").textContent = JSON.stringify(payload, null, 2);
@@ -284,6 +287,7 @@ export function initPlayground({document, fetch, clipboard, timeoutMs = 20000}) 
       $("connection-text").textContent = "Inference online";
       $("mode-text").textContent = `${config.mode === "demo" ? "Demo corpus" : "Live web"} · ${config.semantic_available ? "Semantic" : "Lexical"}`;
       $("semantic-option").disabled = !config.semantic_available;
+      $("fine-tuned-option").disabled = !config.fine_tuned_available;
       show("session-options", config.authentication_required);
       $("dataset-disclosure").textContent = config.mode === "demo" ?
         `Demo corpus: ${config.corpus_documents} authored technical-resource descriptions. This is real ${config.semantic_available ? "MiniLM + BM25" : "BM25"} ranking over a fixed collection, not live web discovery.` :

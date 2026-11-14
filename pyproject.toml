@@ -35,6 +35,8 @@ pythonpath = ["backend"]
 addopts = "-q"
 
 [tool.ruff]
+# Preserve the publisher model card verbatim, including its examples.
+extend-exclude = ["model_artifacts/upstream-minilm"]
 target-version = "py311"
 line-length = 100
 

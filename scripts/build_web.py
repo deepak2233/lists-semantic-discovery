@@ -11,7 +11,13 @@ def main():
     assets.mkdir(parents=True, exist_ok=True)
     shutil.copyfile(ROOT / "extension/nlp.js", assets / "nlp.js")
     shutil.copyfile(ROOT / "extension/safety.js", assets / "safety.js")
-    for name in ("index.html", "assets/app.js", "assets/styles.css", "favicon.svg"):
+    for name in (
+        "index.html",
+        "assets/app.js",
+        "assets/comparison.js",
+        "assets/styles.css",
+        "favicon.svg",
+    ):
         if not (ROOT / "public" / name).is_file():
             raise RuntimeError(f"Missing playground asset: {name}")
     print("Playground assets prepared; extension and webpage use the same local NLP.")

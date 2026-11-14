@@ -1,0 +1,11 @@
+{
+  "adapter_sha256": "148ee3b52db7e20eec65bc28d02f7c864cb6c5b4094d864840f6607ec9cac7b8",
+  "training_source_sha256": "9d0c383d50e738520e872e0680b4107010c8ea52fa90398fb19408261425fe26",
+  "training_data_sha256": "03d217467305729412cb4b7fda06b2b4ac8b3f898164b88eedcc1b13bb2fc8ac",
+  "experiment_processed_triplets": 8192,
+  "experiment_optimizer_updates": 512,
+  "selected_checkpoint_update": 256,
+  "selected_checkpoint_processed_triplets": 4096,
+  "selected_checkpoint_distinct_anchors": 4096,
+  "method": "Post-run reconstruction of the seeded batches; original training source unchanged"
+}
